@@ -1,6 +1,7 @@
 <!-- cmsImageComponent.html -->
 <template>
     <div class="container">
+        <img src={imageSrc} alt="CMS Image" onclick={openModal}/>
         <button onclick={openModal}>Tap here for more information</button>
     </div>
     <template if:true={showModal}>
@@ -14,12 +15,68 @@
                 <div class="modal-buttons">
                     <button onclick={continueAction}>Continue</button>
                     <button onclick={cancelAction}>Cancel</button>
-                    <button onclick={restartAction}>Restart</button>
                 </div>
             </div>
         </div>
     </template>
 </template>
+
+
+
+
+
+
+
+/* cmsImageComponent.css */
+.container {
+    position: relative;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%; /* Adjust as needed */
+    max-width: 400px; /* Maximum width of modal */
+    text-align: center;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    margin: 0 10px;
+}
+
+
 
 // cmsImageComponent.js
 import { LightningElement, track } from 'lwc';
@@ -31,7 +88,6 @@ export default class CmsImageComponent extends LightningElement {
     @track showModal = false;
     imageSrc = 'https://example.com/image.jpg'; // Replace with your image URL
     audioSrc = MUSIC + "/MissionImpossible.mp3"; // Use the audio from the existing logic
-    modalContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'; // Replace with your content
 
     openModal() {
         this.showModal = true;
@@ -45,26 +101,10 @@ export default class CmsImageComponent extends LightningElement {
     }
 
     continueAction() {
-        // Add logic for continue action
         this.closeModal();
     }
 
     cancelAction() {
-        // Add logic for cancel action
         this.closeModal();
-    }
-
-    restartAction() {
-        this.stopAudio();
-        this.playAudio();
-    }
-
-    playAudio() {
-        mpAudio.play();
-    }
-
-    stopAudio() {
-        mpAudio.pause();
-        mpAudio.currentTime = 0;
     }
 }
