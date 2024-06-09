@@ -1,19 +1,62 @@
-<!-- audioPopupComponent.html -->
+<!-- cmsImageComponent.html -->
 <template>
-    <div>
-        <img src={imageSrc} alt="Image" onclick={handleImageClick}/>
-        <lightning-button label="Click here for more information" onclick={openModal}></lightning-button>
-        <template if:true={showModal}>
-            <div class="modal-backdrop"></div>
-            <div class="modal">
-                <button class="close-btn" onclick={closeModal}>Close</button>
-                <h2>More Information</h2>
-                <p>{modalContent}</p>
-                <audio controls src={audioSrc}></audio>
-            </div>
-        </template>
+    <div class="container">
+        <img src={imageSrc} alt="CMS Image" onclick={openModal}/>
     </div>
+    <template if:true={showModal}>
+        <div class="modal">
+            <div class="modal-content">
+                <span class="close" onclick={closeModal}>&times;</span>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum condimentum maximus neque, nec pharetra lectus ullamcorper nec. Donec id dolor eget turpis dictum convallis vel et sem.</p>
+                <p>Nullam a libero a turpis suscipit faucibus. Sed id tristique metus. Proin nec eros vel arcu sodales luctus. Duis efficitur vel enim et rhoncus.</p>
+                <p>Quisque vehicula metus nec orci dapibus lobortis. Nam quis ante nunc. Cras in mauris at velit tempus tincidunt. Sed in mauris ac lorem imperdiet malesuada.</p>
+                <p>Aenean scelerisque aliquam turpis id dapibus. Pellentesque sit amet tortor eu ipsum accumsan iaculis. Fusce rutrum nisi id ultricies posuere.</p>
+                <p>Integer hendrerit, nisi at rhoncus luctus, ipsum nisi feugiat velit, ut tincidunt justo justo et ipsum. Phasellus tincidunt augue vel sem ullamcorper dapibus.</p>
+                <p>Vestibulum nec sapien sit amet risus rutrum accumsan. Mauris accumsan purus sed orci fringilla consequat. Nam eget est in orci facilisis gravida vel nec sapien.</p>
+            </div>
+        </div>
+    </template>
 </template>
+
+/* cmsImageComponent.css */
+.container {
+    position: relative;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 
 
 // audioPopupComponent.js
