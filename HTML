@@ -1,0 +1,16 @@
+<!-- audioPopupComponent.html -->
+<template>
+    <div>
+        <img src={imageSrc} alt="Image" onclick={handleImageClick}/>
+        <lightning-button label="Click here for more information" onclick={openModal}></lightning-button>
+        <template if:true={showModal}>
+            <div class="modal-backdrop"></div>
+            <div class="modal">
+                <button class="close-btn" onclick={closeModal}>Close</button>
+                <h2>More Information</h2>
+                <p>{modalContent}</p>
+                <audio controls src={audioSrc}></audio>
+            </div>
+        </template>
+    </div>
+</template>
