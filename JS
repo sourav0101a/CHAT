@@ -1,0 +1,26 @@
+// audioPopupComponent.js
+import { LightningElement, track } from 'lwc';
+
+export default class AudioPopupComponent extends LightningElement {
+    @track showModal = false;
+    imageSrc = 'https://example.com/image.jpg'; // Replace with your image URL
+    audioSrc = 'https://example.com/audio.mp3'; // Replace with your audio URL
+    modalContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'; // Replace with your content
+
+    handleImageClick() {
+        this.playAudio();
+    }
+
+    playAudio() {
+        let audio = new Audio(this.audioSrc);
+        audio.play();
+    }
+
+    openModal() {
+        this.showModal = true;
+    }
+
+    closeModal() {
+        this.showModal = false;
+    }
+}
