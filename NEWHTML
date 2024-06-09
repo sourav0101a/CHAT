@@ -1,43 +1,49 @@
+<!-- audioPopupComponent.html -->
 <template>
-    <lightning-card  title="Mission Possible Music" icon-name="standard:announcement">
-        <div class="slds-text-align_left">
-            <lightning-input class="slds-p-left_large"  
-                            type="toggle" 
-                            message-toggle-active="Play"
-                            message-toggle-inactive="Pause"
-                            label="Play the Theme!" 
-                            name="play" 
-                            value={playAudio} 
-                            onchange={handleToggleChange}>
-            </lightning-input>
-        </div>
-    </lightning-card>
+    <div>
+        <img src={imageSrc} alt="Image" onclick={handleImageClick}/>
+        <lightning-button label="Click here for more information" onclick={openModal}></lightning-button>
+        <template if:true={showModal}>
+            <div class="modal-backdrop"></div>
+            <div class="modal">
+                <button class="close-btn" onclick={closeModal}>Close</button>
+                <h2>More Information</h2>
+                <p>{modalContent}</p>
+                <audio controls src={audioSrc}></audio>
+            </div>
+        </template>
+    </div>
 </template>
 
 
-
+// audioPopupComponent.js
 import { LightningElement, track } from 'lwc';
 import MUSIC from "@salesforce/resourceUrl/MissionPossibleAssets";
 
 const mpAudio = new Audio(MUSIC + "/MissionImpossible.mp3");
 
-export default class AudioPlayer extends LightningElement {
+export default class AudioPopupComponent extends LightningElement {
+    @track showModal = false;
+    imageSrc = 'https://example.com/image.jpg'; // Replace with your image URL
+    audioSrc = 'https://example.com/audio.mp3'; // Replace with your audio URL
+    modalContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'; // Replace with your content
 
-    @track playAudio=false;
+    handleImageClick() {
+        this.playAudio();
+    }
 
-    connectedCallback() {
-        if (this.playAudio){
-            mpAudio.play();
-        }
-	}
+    playAudio() {
+        mpAudio.play();
+    }
 
-    handleToggleChange(event) {
-        if (this.playAudio){ // switch to pause 
-            this.playAudio = false;
-            mpAudio.pause();
-        } else { // switch to play
-            this.playAudio = true;
-            mpAudio.play();
-        }
+    openModal() {
+        this.showModal = true;
+        mpAudio.play();
+    }
+
+    closeModal() {
+        this.showModal = false;
+        mpAudio.pause();
+        mpAudio.currentTime = 0;
     }
 }
