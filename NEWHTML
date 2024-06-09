@@ -1,0 +1,43 @@
+<template>
+    <lightning-card  title="Mission Possible Music" icon-name="standard:announcement">
+        <div class="slds-text-align_left">
+            <lightning-input class="slds-p-left_large"  
+                            type="toggle" 
+                            message-toggle-active="Play"
+                            message-toggle-inactive="Pause"
+                            label="Play the Theme!" 
+                            name="play" 
+                            value={playAudio} 
+                            onchange={handleToggleChange}>
+            </lightning-input>
+        </div>
+    </lightning-card>
+</template>
+
+
+
+import { LightningElement, track } from 'lwc';
+import MUSIC from "@salesforce/resourceUrl/MissionPossibleAssets";
+
+const mpAudio = new Audio(MUSIC + "/MissionImpossible.mp3");
+
+export default class AudioPlayer extends LightningElement {
+
+    @track playAudio=false;
+
+    connectedCallback() {
+        if (this.playAudio){
+            mpAudio.play();
+        }
+	}
+
+    handleToggleChange(event) {
+        if (this.playAudio){ // switch to pause 
+            this.playAudio = false;
+            mpAudio.pause();
+        } else { // switch to play
+            this.playAudio = true;
+            mpAudio.play();
+        }
+    }
+}
