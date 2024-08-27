@@ -1,16 +1,53 @@
-<!-- audioPopupComponent.html -->
-<template>
-    <div>
-        <img src={imageSrc} alt="Image" onclick={handleImageClick}/>
-        <lightning-button label="Click here for more information" onclick={openModal}></lightning-button>
-        <template if:true={showModal}>
-            <div class="modal-backdrop"></div>
-            <div class="modal">
-                <button class="close-btn" onclick={closeModal}>Close</button>
-                <h2>More Information</h2>
-                <p>{modalContent}</p>
-                <audio controls src={audioSrc}></audio>
-            </div>
-        </template>
-    </div>
-</template>
+import { api, LightningElement } from 'lwc';
+import newCase from '@salesforce/apex/SC_CommonLEX.newCase';
+import LightningAlert from 'lightning/alert';
+import { NavigationMixin } from 'lightning/navigation';
+
+export default class Scnewcase extends NavigationMixin(LightningElement) {
+    @api resType;
+    @api resMsg;
+
+    @api
+    newCaseContact(contactId) {
+        console.log('value of contactId: ' + contactId);
+        
+        newCase({ conId: contactId })
+            .then(result => {
+                let conts = result;
+                let indexVal = conts.indexOf(",");
+                this.resType = conts.slice(0, indexVal);
+                this.resMsg = conts.slice(indexVal + 1);
+                this.dispatchEvent(new CustomEvent("operationcompleted"));
+                    
+                if (this.resType === 'URL') {
+                    console.log('148778 new CustomEvent', this.resMsg);
+                    this.navigateToRecordPage(this.resMsg);
+                    // const valueChangeEvent = new CustomEvent("valuechange", {
+                    // detail: { resMsg }
+                    // });
+                    // Fire the custom event
+                    
+                    
+                    
+                
+                 }
+            })
+            .catch(error => {
+                console.log('Error: ' + error);
+            });
+    }
+
+    navigateToRecordPage(caseId) {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: caseId,
+                objectApiName: 'Case',
+                actionName: 'view'
+            }
+        }).then(() => {
+            // Ensure event is dispatched after navigation
+            this.dispatchEvent(new CustomEvent('alertmodalclose'));
+        });
+    }
+}
