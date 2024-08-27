@@ -9,12 +9,10 @@
     <aura:handler name="init" value="{!this}" action="{!c.init}"/>
 
     <aura:if isTrue="{!v.showConfirmDialogBox}">
-        <!-- Modal container -->
         <div class="slds-modal slds-fade-in-open">
             <div class="slds-modal__container">
-                <!-- Conditional rendering based on loading state -->
                 <aura:if isTrue="{!v.isLoading}">
-                    <div class="slds-align_absolute-center">
+                    <div class="slds-align_absolute-center slds-modal__content slds-p-around--medium">
                         <lightning:spinner alternativeText="Loading" size="large"/>
                         <b>Case creation is in progress</b>
                     </div>
@@ -23,9 +21,9 @@
                     <div class="slds-align_absolute-center slds-modal__content slds-p-around--medium">
                         <b>Are you sure you want to Open a Case?</b>
                     </div>
-                    <div style="padding-left: 40% !important; padding-top: 15% !important;">
-                        <lightning:button name="Cancel" label="No" onclick="{!c.handleConfirmDialogCancel}"/>
-                        <lightning:button variant="brand" name="Ok" label="Yes" onclick="{!c.handleConfirmDialogOk}"/>
+                    <div class="slds-align_absolute-center slds-modal__footer">
+                        <lightning:button variant="neutral" label="No" onclick="{!c.handleConfirmDialogCancel}"/>
+                        <lightning:button variant="brand" label="Yes" onclick="{!c.handleConfirmDialogOk}"/>
                     </div>
                 </aura:if>
             </div>
@@ -33,52 +31,3 @@
         <div class="slds-backdrop slds-backdrop_open"></div>
     </aura:if>
 </aura:component>
-
-
-
-({
-    init: function(component, event, helper) {
-        component.set('v.showConfirmDialogBox', false);
-        component.set('v.isLoading', false);
-    },
-
-    handleConfirmDialogOk: function(component, event, helper) {
-        console.log("entered aura controller 148778");
-        var recId = component.get("v.recordId");
-        console.log('value of recId' + recId);
-        var lwcRef = component.find("ncase");
-        component.set('v.isLoading', true); // Show the loading spinner and message
-        lwcRef.newCaseContact(recId);
-    },
-
-    closeModal: function(component, event) {
-        console.log('entered alert event');
-        $A.get("e.force:closeQuickAction").fire();
-    },
-
-    refreshTab: function(component, event) {
-        console.log('Entered Aura Event refresh');
-        $A.get("e.force:closeQuickAction").fire();
-        var workspaceAPI = component.find("workspace");
-        workspaceAPI.getFocusedTabInfo().then(function(response) {
-            var focusedTabId = response.tabId;
-            workspaceAPI.refreshTab({
-                tabId: focusedTabId,
-                includeAllSubtabs: false
-            });
-        }).catch(function(error) {
-            console.log(error);
-        });
-    },
-
-    handleConfirmDialogCancel: function(component, event, helper) {
-        component.set('v.showConfirmDialogBox', false);
-        $A.get("e.force:closeQuickAction").fire();
-    },
-
-    handleAlertModalClose: function(component, event, helper) {
-        console.log('Handle alert modal close');
-        component.set('v.showConfirmDialogBox', false);
-        component.set('v.isLoading', false);
-    }
-})
