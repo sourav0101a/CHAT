@@ -1,50 +1,43 @@
-<template>
-    <div class="container">
-        <img class="sfdcCbImage" alt="image" src="/sfsites/c/file-asset/MPrope2?v=1" onclick={openModal}/>
-        <button class="btn" onclick={openModal}>Tap here for more information</button>
-    </div>
-    <template if:true={showModal}>
-        <div class="modal">
-            <div class="modal-content">
-                <!-- <span class="close" onclick={closeModal}>&times;</span> -->
-                <audio id="audioPlayer" class ="audioPlayer" controls>
-                    <source src={audioSrc} type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-                <div class="modal-buttons">
-                    <p id="typingMessage"></p>
-                    <button onclick={continueAction}>Continue</button>
-                    <button onclick={cancelAction}>Cancel</button>
-                </div>
-            </div>
-        </div>
-    </template>
-</template>
+import { api, LightningElement } from 'lwc';
+import newCase from '@salesforce/apex/SC_CommonLEX.newCase';
+import { NavigationMixin } from 'lightning/navigation';
 
-<script>
-    const message = "Hey, This is Ethun Hunt, a special BOT for helping our Agents on the ground. To know more about me, let's chat..... Click the chat and post your query. I will check that and revert all the information, which I found in our database.";
-    const typingSpeed = 50; // Adjust typing speed (milliseconds per character)
+export default class Scnewcase extends NavigationMixin(LightningElement) {
+    @api resType;
+    @api resMsg;
 
-    let index = 0;
-    const typingEffect = () => {
-        if (index < message.length) {
-            document.getElementById("typingMessage").innerHTML += message.charAt(index);
-            index++;
-            setTimeout(typingEffect, typingSpeed);
-        }
-    };
+    @api
+    newCaseContact(contactId) {
+        console.log('value of contactId: ' + contactId);
+        newCase({ conId: contactId })
+            .then(result => {
+                let conts = result;
+                let indexVal = conts.indexOf(",");
+                this.resType = conts.slice(0, indexVal);
+                this.resMsg = conts.slice(indexVal + 1);
+                this.dispatchEvent(new CustomEvent("operationcompleted"));
 
-    const openModal = () => {
-        document.getElementById("typingMessage").innerHTML = ""; // Clear previous content
-        typingEffect(); // Start typing effect
-        // Add additional logic to open modal if needed
-    };
+                if (this.resType === 'URL') {
+                    console.log('148778 new CustomEvent', this.resMsg);
+                    this.navigateToRecordPage(this.resMsg);
+                }
+            })
+            .catch(error => {
+                console.log('Error: ' + error);
+            });
+    }
 
-    const continueAction = () => {
-        // Add logic for continue action
-    };
-
-    const cancelAction = () => {
-        // Add logic for cancel action
-    };
-</script>
+    navigateToRecordPage(caseId) {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: caseId,
+                objectApiName: 'Case',
+                actionName: 'view'
+            }
+        }).then(() => {
+            // Ensure event is dispatched after navigation
+            this.dispatchEvent(new CustomEvent('alertmodalclose'));
+        });
+    }
+}
