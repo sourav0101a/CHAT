@@ -1,92 +1,70 @@
-<!-- cmsImageComponent.html -->
-<template>
-    <div class="container">
-        <img src={imageSrc} alt="CMS Image" onclick={openModal}/>
-    </div>
-    <template if:true={showModal}>
-        <div class="modal">
-            <div class="modal-content">
-                <span class="close" onclick={closeModal}>&times;</span>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum condimentum maximus neque, nec pharetra lectus ullamcorper nec. Donec id dolor eget turpis dictum convallis vel et sem.</p>
-                <p>Nullam a libero a turpis suscipit faucibus. Sed id tristique metus. Proin nec eros vel arcu sodales luctus. Duis efficitur vel enim et rhoncus.</p>
-                <p>Quisque vehicula metus nec orci dapibus lobortis. Nam quis ante nunc. Cras in mauris at velit tempus tincidunt. Sed in mauris ac lorem imperdiet malesuada.</p>
-                <p>Aenean scelerisque aliquam turpis id dapibus. Pellentesque sit amet tortor eu ipsum accumsan iaculis. Fusce rutrum nisi id ultricies posuere.</p>
-                <p>Integer hendrerit, nisi at rhoncus luctus, ipsum nisi feugiat velit, ut tincidunt justo justo et ipsum. Phasellus tincidunt augue vel sem ullamcorper dapibus.</p>
-                <p>Vestibulum nec sapien sit amet risus rutrum accumsan. Mauris accumsan purus sed orci fringilla consequat. Nam eget est in orci facilisis gravida vel nec sapien.</p>
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="showConfirmDialogBox" type="boolean" default="false"/>
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+
+    <lightning:workspaceAPI aura:id="workspace" />
+    <lightning:navigation aura:id="navService"/>
+    <c:scnewcase aura:id="ncase" onalerteventmodal="{!c.closeModal}" onalertrefreshmodal="{!c.refreshTab}" onalertmodalclose="{!c.handleAlertModalClose}"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+    <div aura:id="toggleDiv">
+        <aura:if isTrue="{!v.showConfirmDialogBox}">
+            <div style="padding-top: 15% !important;" class="slds-align_absolute-center">
+                <b>Case creation is in progress</b>
             </div>
-        </div>
-    </template>
-</template>
+            <aura:set attribute="else">
+                <div class="slds-align_absolute-center slds-modal__content slds-p-around--medium" style="padding-top: 10% !important;">
+                    <b>Are you sure you want to Open a Case?</b>
+                </div>
+                <div style="padding-left: 40% !important; padding-top: 15% !important;">
+                    <lightning:button name="Cancel" label="No" onclick="{!c.handleConfirmDialogCancel}"/>
+                    <lightning:button variant="brand" name="Ok" label="Yes" onclick="{!c.handleConfirmDialogOk}"/>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+</aura:component>
+({
+    init: function(component, event, helper) {
+        component.set('v.showConfirmDialogBox', false);
+    },
 
-/* cmsImageComponent.css */
-.container {
-    position: relative;
-}
+    handleConfirmDialogOk: function(component, event, helper) {
+        console.log("entered aura controller 148778");
+        var recId = component.get("v.recordId");
+        console.log('value of recId' + recId);
+        var lwcRef = component.find("ncase");
+        lwcRef.newCaseContact(recId);
+        component.set('v.showConfirmDialogBox', true);
+    },
 
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-}
+    closeModal: function(component, event) {
+        console.log('entered alert event');
+        $A.get("e.force:closeQuickAction").fire();
+    },
 
-.modal-content {
-    background-color: #fefefe;
-    margin: 10% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-}
+    refreshTab: function(component, event) {
+        console.log('Entered Aura Event refresh');
+        $A.get("e.force:closeQuickAction").fire();
+        var workspaceAPI = component.find("workspace");
+        workspaceAPI.getFocusedTabInfo().then(function(response) {
+            var focusedTabId = response.tabId;
+            workspaceAPI.refreshTab({
+                tabId: focusedTabId,
+                includeAllSubtabs: false
+            });
+        }).catch(function(error) {
+            console.log(error);
+        });
+    },
 
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
+    handleConfirmDialogCancel: function(component, event, helper) {
+        component.set('v.showConfirmDialogBox', false);
+        $A.get("e.force:closeQuickAction").fire();
+    },
 
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-
-
-// audioPopupComponent.js
-import { LightningElement, track } from 'lwc';
-import MUSIC from "@salesforce/resourceUrl/MissionPossibleAssets";
-
-const mpAudio = new Audio(MUSIC + "/MissionImpossible.mp3");
-
-export default class AudioPopupComponent extends LightningElement {
-    @track showModal = false;
-    imageSrc = 'https://example.com/image.jpg'; // Replace with your image URL
-    audioSrc = 'https://example.com/audio.mp3'; // Replace with your audio URL
-    modalContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'; // Replace with your content
-
-    handleImageClick() {
-        this.playAudio();
+    handleAlertModalClose: function(component, event, helper) {
+        component.set('v.showConfirmDialogBox', false);
     }
-
-    playAudio() {
-        mpAudio.play();
-    }
-
-    openModal() {
-        this.showModal = true;
-        mpAudio.play();
-    }
-
-    closeModal() {
-        this.showModal = false;
-        mpAudio.pause();
-        mpAudio.currentTime = 0;
-    }
-}
+})
