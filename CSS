@@ -1,29 +1,79 @@
-/* audioPopupComponent.css */
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9998;
-}
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+<aura:attribute name="showConfirmDialogBox" type="boolean" default="false"/>
+    
 
-.modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    z-index: 9999;
-}
+<lightning:workspaceAPI aura:id="workspace" />
+<lightning:navigation aura:id="navService"/>
+<c:scnewcase aura:id="ncase" onalerteventmodal="{!c.closeModal}" onalertrefreshmodal="{!c.refreshTab}" />
+	
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+<!-- <aura:handler name="render" value="{!this}" action="{!c.createCaseCall}"/> -->
+<div aura:id="toggleDiv">
+        <aura:if isTrue="{!v.showConfirmDialogBox}">
+            <!--<aura:if isTrue="{!v.isLoading}">
+                 <lightning:spinner alternativeText="Loading" size="large"/> -->
+            <div style="padding-top: 15% !important;" class="slds-align_absolute-center">
+                <b>Case creation is in progress</b>
+            </div>
+              <!--  </aura:if> -->
+            
+            <aura:set attribute="else">
+                <div class="slds-align_absolute-center slds-modal__content slds-p-around--medium" style="padding-top: 10% !important;">
+                    <b>Are you sure you want to Open a Case?</b>
+                </div>
+                <div style="padding-left: 40% !important; padding-top: 15% !important;">
+                    <lightning:button name="Cancel" label="No" onclick="{!c.handleConfirmDialogCancel}"/>
+                    <lightning:button variant="brand" name="Ok" label="Yes" onclick="{!c.handleConfirmDialogOk}"/>
+                </div>
+            </aura:set>
+        </aura:if>
+        
+    </div>
+</aura:component>
 
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
-
-/* Add any additional styling as needed */
+({//NOSONAR
+	init : function(component, event, helper) {
+        
+        component.set('v.showConfirmDialogBox', false);
+    },
+    handleConfirmDialogOk : function(component, event, helper) {
+        console.log("entered aura controller 148778");
+        var recId= component.get("v.recordId");
+        console.log('value of recId'+recId);
+        var lwcRef = component.find("ncase");
+        lwcRef.newCaseContact(recId);
+        $A.util.addClass(component.find("toggleDiv"));
+        component.set('v.showConfirmDialogBox', true);
+    },
+    closeModal : function(component,event){
+        console.log('entered alert event');
+        $A.get("e.force:closeQuickAction").fire();
+    },
+    refreshTab : function(component,event){
+        console.log('Entered Aura Event refresh');
+        $A.get("e.force:closeQuickAction").fire();
+        var workspaceAPI = component.find("workspace");
+        workspaceAPI.getFocusedTabInfo().then(function(response) {
+            var focusedTabId = response.tabId;
+            workspaceAPI.refreshTab({
+                tabId: focusedTabId,
+                includeAllSubtabs: false
+            });
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
+    },
+    
+    handleConfirmDialogCancel : function(component, event, helper) {
+        component.set('v.showConfirmDialogBox', false);
+        $A.get("e.force:closeQuickAction").fire();
+    },
+    getValueFromLwc : function(component, event, helper) { 	
+        console.log('148778 getValueFromLwc');
+        //component.set("v.inputValue",event.getParam('resMsg'));
+        component.set('v.showConfirmDialogBox', false);
+        
+    }
+})
