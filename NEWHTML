@@ -8,7 +8,7 @@
 
     <aura:handler name="init" value="{!this}" action="{!c.init}"/>
 
-    <div aura:id="toggleDiv">
+    <div aura:id="toggleDiv" class="{!v.showConfirmDialogBox ? 'slds-hide' : ''}">
         <aura:if isTrue="{!v.showConfirmDialogBox}">
             <div style="padding-top: 15% !important;" class="slds-align_absolute-center">
                 <b>Case creation is in progress</b>
@@ -25,46 +25,3 @@
         </aura:if>
     </div>
 </aura:component>
-({
-    init: function(component, event, helper) {
-        component.set('v.showConfirmDialogBox', false);
-    },
-
-    handleConfirmDialogOk: function(component, event, helper) {
-        console.log("entered aura controller 148778");
-        var recId = component.get("v.recordId");
-        console.log('value of recId' + recId);
-        var lwcRef = component.find("ncase");
-        lwcRef.newCaseContact(recId);
-        component.set('v.showConfirmDialogBox', true);
-    },
-
-    closeModal: function(component, event) {
-        console.log('entered alert event');
-        $A.get("e.force:closeQuickAction").fire();
-    },
-
-    refreshTab: function(component, event) {
-        console.log('Entered Aura Event refresh');
-        $A.get("e.force:closeQuickAction").fire();
-        var workspaceAPI = component.find("workspace");
-        workspaceAPI.getFocusedTabInfo().then(function(response) {
-            var focusedTabId = response.tabId;
-            workspaceAPI.refreshTab({
-                tabId: focusedTabId,
-                includeAllSubtabs: false
-            });
-        }).catch(function(error) {
-            console.log(error);
-        });
-    },
-
-    handleConfirmDialogCancel: function(component, event, helper) {
-        component.set('v.showConfirmDialogBox', false);
-        $A.get("e.force:closeQuickAction").fire();
-    },
-
-    handleAlertModalClose: function(component, event, helper) {
-        component.set('v.showConfirmDialogBox', false);
-    }
-})
