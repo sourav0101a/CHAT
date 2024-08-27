@@ -25,3 +25,40 @@
         </aura:if>
     </div>
 </aura:component>
+
+
+
+
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="showConfirmDialogBox" type="boolean" default="false"/>
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+
+    <lightning:workspaceAPI aura:id="workspace" />
+    <lightning:navigation aura:id="navService"/>
+    <c:scnewcase aura:id="ncase" onalerteventmodal="{!c.closeModal}" onalertrefreshmodal="{!c.refreshTab}" onalertmodalclose="{!c.handleAlertModalClose}"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+    <aura:if isTrue="{!v.showConfirmDialogBox}">
+        <div class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <aura:if isTrue="{!v.isLoading}">
+                    <div class="slds-align_absolute-center">
+                        <lightning:spinner alternativeText="Loading" size="large"/>
+                        <b>Case creation is in progress</b>
+                    </div>
+                </aura:if>
+                <aura:else>
+                    <div class="slds-align_absolute-center slds-modal__content slds-p-around--medium">
+                        <b>Are you sure you want to Open a Case?</b>
+                    </div>
+                    <div style="padding-left: 40% !important; padding-top: 15% !important;">
+                        <lightning:button name="Cancel" label="No" onclick="{!c.handleConfirmDialogCancel}"/>
+                        <lightning:button variant="brand" name="Ok" label="Yes" onclick="{!c.handleConfirmDialogOk}"/>
+                    </div>
+                </aura:else>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>
