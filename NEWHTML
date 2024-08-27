@@ -36,57 +36,6 @@
 
 
 
-
-({
-    init: function(component, event, helper) {
-        component.set('v.showConfirmDialogBox', false);
-        component.set('v.isLoading', false);
-    },
-
-    handleConfirmDialogOk: function(component, event, helper) {
-        console.log("entered aura controller 148778");
-        var recId = component.get("v.recordId");
-        console.log('value of recId' + recId);
-        var lwcRef = component.find("ncase");
-        component.set('v.isLoading', true); // Show the loading spinner and message
-        lwcRef.newCaseContact(recId);
-    },
-
-    closeModal: function(component, event) {
-        console.log('entered alert event');
-        $A.get("e.force:closeQuickAction").fire();
-    },
-
-    refreshTab: function(component, event) {
-        console.log('Entered Aura Event refresh');
-        $A.get("e.force:closeQuickAction").fire();
-        var workspaceAPI = component.find("workspace");
-        workspaceAPI.getFocusedTabInfo().then(function(response) {
-            var focusedTabId = response.tabId;
-            workspaceAPI.refreshTab({
-                tabId: focusedTabId,
-                includeAllSubtabs: false
-            });
-        }).catch(function(error) {
-            console.log(error);
-        });
-    },
-
-    handleConfirmDialogCancel: function(component, event, helper) {
-        component.set('v.showConfirmDialogBox', false);
-        $A.get("e.force:closeQuickAction").fire();
-    },
-
-    handleAlertModalClose: function(component, event, helper) {
-        console.log('Handle alert modal close');
-        component.set('v.showConfirmDialogBox', false);
-        component.set('v.isLoading', false);
-    }
-})
-
-
-
-
 ({
     init: function(component, event, helper) {
         component.set('v.showConfirmDialogBox', false);
