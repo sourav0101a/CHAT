@@ -1,0 +1,547 @@
+/*********************************************************************************  
+Name            : RSCM_RequiredFieldForContract  
+Created By      : Soumadeep Paul   
+Created Date    : 11 May 2022 
+Description     : Apex class used by flow to check if required fields on contract is filled 
+JIRA No			: CPT-125
+*********************************************************************************/  
+public class RSCM_RequiredFieldForContract {
+    @InvocableMethod
+	public static List<List<String>> checkRequiredField( List<String> supplierContractId) {  
+        List<List<String>> finalResult = new List<List<String>>();   
+        List<String> returnVal = new List<String>();    
+        Supplier_Contract__c supplierContractObj = new Supplier_Contract__c();  
+        Map<String,String> fieldApiLabelMap = new Map<String,String>(); 
+                
+        String a_Object_API_Name = 'Supplier_Contract__c';  
+        Map<String, Schema.SObjectField> M_Objects_Schema_Field = Schema.getGlobalDescribe().get(a_Object_API_Name).getDescribe().fields.getMap();  
+        for( String a_Field_Name : M_Objects_Schema_Field.keySet() ) {  
+                
+            Schema.DescribeFieldResult a_Field_Description = M_Objects_Schema_Field.get( a_Field_Name ).getDescribe();  
+            fieldApiLabelMap.put(a_Field_Description.getName(),a_Field_Description.getLabel()); 
+        }   
+        supplierContractObj = [SELECT Id,   
+                                        //CAT_Contract_Number__c,   
+                                        Supplier_Organisation_Account_Number__c,    
+                                        Contracting_Entity__c,  
+                                        Service_Facilitator_Definition__c,  
+                                        Approval_of_Service_Facilitators__c ,   
+                                        Supplier_Renewal_Process__c ,   
+                                        Custom_Renewal_Process_If_Other__c, 
+                                        Supplier_Termination_Process__c ,   
+                                        Custom_Termination_Process_If_Other__c  ,   
+                                        Reasons_for_Termination__c  ,   
+                                        Right_to_Audit_Vendor__c,   
+                                        Audit_Frequency__c, 
+                                        Basis_for_Interest_calculation__c,  
+                                        Details_of_level_playing_field_policy__c,   
+                                        Direct_loss_is_capped_for_Refinitiv__c, 
+                                        Include_liability_cap_for_vendor__c ,   
+                                        Include_liability_cap_vendor_currency__c,   
+                                        Contract_silent_on_vendors_liabilities__c,  
+                                        Contract_silent_on_suppliers_liabilities__c ,   
+                                        When_can_vendor_assign_the_contract__c, 
+                                        Preferred_vendor_supplier_terms_exist__c,   
+                                        Subscriber_Agreement_Required__c,   
+                                        Restrictions_for_subscriber_charges__c, 
+                                        Anti_competitive_data_use_agreement__c, 
+                                        Free_distribution_in_subscriber_group__c,   
+                                        Support_provision_outlined_by_supplier__c,  
+                                        Contract_Description__c,    
+                                        Liability_of_Interest__c,   
+                                        Vendor_to_provide_technical_documents__c,   
+                                        Account__c ,    
+                                        Contract_Type__c ,  
+                                        Form_of_Agreement__c ,  
+                                        Used_Agreement_Template__c ,    
+                                        Law_of_Agreement_Country__c ,   
+                                        Status__c , 
+                                        Sub_Status__c,  
+                                        Effective_Date__c , 
+                               			Last_Commitment_Date_Vendor__c, // sfcf-2092
+                               			Reason_Last_Commitment_Vendor__c,
+                               			Reason_Last_Commitment_Vendor_Other__c,
+                                        Is_Handover__c  ,   
+                                        Vendor_s_Handover_BU__c ,   
+                                        Content_to_Vendor_on_Exclusive_Basis__c ,   
+                                        Group_License__c ,  
+                                        Explanation_of_why_not__c , 
+                                        Group_Definition__c ,   
+                                        Group_List_needs_to_be_provided__c ,    
+                                        Updates_to_Group_List_Required__c , 
+                                        Frequency_of_Updates__c ,   
+                                        Group_list_changes_require_approval__c  ,   
+                                        Supplier_accepts_the_use_of_third_partie__c,    
+                                        Term_type__c ,  
+                                        Termination_Effective_Date__c , 
+                                        Termination_Initiated_by__c ,   
+                                        Renewal_Start_Date__c,  
+                                        Term_Length__c ,    
+                                        Initial_Term_Length__c ,    
+                                        Renewal_End_Date__c ,   
+                                        Reporting_Requirements__c , 
+                                        Audit_Guidelines__c ,   
+                                        Vendor_liable_for_bank_transfer_charges__c, 
+                                        Supplier_data_quality_warranties_exist__c,  
+                                        Level_playing_field_warranties_exist__c,    
+                                        IPR_warranties_exist__c,    
+                                        Indirect_loss_is_excluded_for_Refinitiv__c ,    
+                                        Direct_loss_is_excluded_for_Refinitiv__c ,  
+                                        Vendors_liabilities_uncapped__c,    
+                                        Indirect_loss_is_excluded_for_Supplier__c , 
+                                        Direct_loss_is_excluded_for_Supplier__c ,   
+                                        Indemnity_for_3rd_party_IPR_infringement__c,    
+                                        Indemnity_for_claims_from_information__c,   
+                                        Supplier_warranties_comply_with_applicab__c,    
+                                        Supplier_warranties_comply_with_GDPR__c,    
+                                        Automatic_successor_assignment_exists__c,   
+                                        Right_to_terminate_in_case_of_assignment__c,    
+                                        Non_standard_confidentiality_clause__c, 
+                                        Supplier_ethical_code_Status__c ,   
+                                        Does_a_separate_SLA_document_exist__c , 
+                                        Supplier_Contract_Reference__c ,    
+                                        Free_product_access__c,     
+                                        Situations_where_liable_for_audit_costs__c, 
+                                        Contract_required_subscriber_agreement__c,  
+                                        Data_Purge_Required_upon_Termination__c,    
+                                        //Details_of_Supplier_Conditions__c,  
+                                        Details_of_Supplier_Conditions_Text__c,
+                                        Vendor_Liability_Cap_Variable__c,
+                                        Regulatory_Requirements__c,
+                                        Vendor_Activity_Description__c,
+                                        Regulatory_History__c,
+                                        External_Dependency__c,
+                                        Supplier_Dependency__c,
+                                        Outsourcing__c,
+                                        Legal_Oversight__c,
+                                        Verification_of_Outsourcing__c,
+                                        Supplier_Co_operation__c,
+                                        Termination_of_Outsourcing__c,
+                                        Details_regulation__c,
+										Record_Retention_Period__c,
+										Audit_Record_Retention_Period_Other__c,
+										Other_Circumstances__c,
+										Notice_Period__c,
+										Notice_Other_Audit__c,
+										Affiliates_Definition__c,
+										Brief_Summary__c,
+										Change_control_termination_rights_detail__c,
+										Death_in_service_liability_UK__c,
+										Limit_for_Report_Corrections__c,
+										Details_of_Corrected_Reporting__c,
+										Scope_of_Group_Coverage__c,
+										Details_of_Other_Scope_of_Group_Coverage__c,
+										Overview_of_required_documentation__c,
+										Website_Usage_rights__c,
+										Exceptions_to_website_use__c,
+										Excluded_Entities__c,
+										Permitted_Entities__c,
+										Fee_change_frequency__c,
+										Frequency_Other_of_Fee_Changes__c,
+										Initial_Term_Length_Other__c,
+										Maximum_Audit_Period__c,
+										Maximum_Audit_Period_Other__c,
+										Notice_for_changes_to_royalty_fees__c,
+										Notice_Other_Royalty_Fee_Changes__c,
+										Other_Audit_Frequency__c,
+										Record_Retention_Period_Post_Termination__c,
+										Record_Period_Other_Post_Termination__c,
+										Renewal_Term_Length_Other__c,
+										Include_liability_cap_for_supplier__c,
+										Include_liability_cap_supplier_currency__c,
+										Supplier_s_supply_chain_ethical_code__c,
+										Contractual_Price_Increase__c,
+										Contractual_Price_Increase_Details__c,
+										Supplier_Liability_Cap_Variable__c,
+                               			Additional_Supplier_Warranties__c,
+                               			Details_of_Additional_Supplier_Warrantie__c,
+                               			Details_of_Supplier_Data_Quality_Warrant__c,
+                               			Service_Level_Terms__c,
+                                   		Details_of_Service_Level_Terms__c,
+                               			Subscriber_agreement_updates_required__c,
+                               			Vendor_to_provide_document_updates__c,
+                               			Direct_loss_is_capped_for_Supplier__c,
+										Notice_major_technical_changes__c,
+										Notice_major_data_content_changes__c,
+										Notice_minor_data_content_changes__c,
+										Notice_minor_technical_changes__c,
+										Notice_Other_Major_Data_Changes__c,
+										Notice_Other_Minor_Data_Changes__c,
+										Notice_Other_Major_Technical_Changes__c,
+										Notice_Other_Minor_Technical_Changes__c
+                                FROM Supplier_Contract__c   
+                                WHERE Id = :supplierContractId  
+                                LIMIT 1 
+                                ];  
+            // if(supplierContractObj.Status__c == 'Approved' || (supplierContractObj.Status__c == 'Live' && supplierContractObj.Sub_Status__c == 'Amendment Approved' )) {    
+            if((supplierContractObj.Form_of_Agreement__c == 'Contract'|| supplierContractObj.Form_of_Agreement__c == 'Contribution Distribution Agreement') && supplierContractObj.Contract_Type__c == 'Data License') {
+                /*if(String.isBlank(supplierContractObj.CAT_Contract_Number__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('CAT_Contract_Number__c'));                   
+                }*/ 
+                  if(String.isBlank(supplierContractObj.Contracting_Entity__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Contracting_Entity__c'));                    
+                }if(supplierContractObj.Effective_Date__c == null) { 
+                   returnVal.add(fieldApiLabelMap.get('Effective_Date__c'));    
+                }if(supplierContractObj.Last_Commitment_Date_Vendor__c != null && String.isBlank(supplierContractObj.Reason_Last_Commitment_Vendor__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Reason_Last_Commitment_Vendor__c'));  //sfcf-2092
+                }if(supplierContractObj.Reason_Last_Commitment_Vendor__c == 'Other' && String.isBlank(supplierContractObj.Reason_Last_Commitment_Vendor_Other__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Reason_Last_Commitment_Vendor_Other__c'));  //sfcf-2092
+                }
+                if(String.isBlank(supplierContractObj.Form_of_Agreement__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Form_of_Agreement__c')); 
+                }if(String.isBlank(supplierContractObj.Is_Handover__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Is_Handover__c'));   
+                }if(String.isBlank(supplierContractObj.Contract_Description__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Contract_Description__c'));                  
+                }if(String.isBlank(supplierContractObj.Contract_Type__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Contract_Type__c')); 
+                }if(String.isBlank(supplierContractObj.Used_Agreement_Template__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Used_Agreement_Template__c'));   
+                }if(String.isBlank(supplierContractObj.Law_of_Agreement_Country__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Law_of_Agreement_Country__c'));  
+                }if(String.isBlank(supplierContractObj.Regulatory_Requirements__c)) {
+                   returnVal.add(fieldApiLabelMap.get('Regulatory_Requirements__c'));
+                }if(supplierContractObj.Is_Handover__c == 'Yes' && String.isBlank(supplierContractObj.Vendor_s_Handover_BU__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Vendor_s_Handover_BU__c'));  
+                }if(String.isBlank(supplierContractObj.Group_License__c)) {  
+                    returnVal.add(fieldApiLabelMap.get('Group_License__c'));    
+                } if(String.isBlank(supplierContractObj.Supplier_accepts_the_use_of_third_partie__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Supplier_accepts_the_use_of_third_partie__c'));  
+                /*}if(supplierContractObj.Supplier_accepts_the_use_of_third_partie__c == 'Yes' && String.isBlank(supplierContractObj.Approval_of_Service_Facilitators__c)) {  
+                  returnVal.add(fieldApiLabelMap.get('Approval_of_Service_Facilitators__c'));*/                  
+                }if(String.isBlank(supplierContractObj.Content_to_Vendor_on_Exclusive_Basis__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Content_to_Vendor_on_Exclusive_Basis__c'));  
+                } if(String.isBlank(supplierContractObj.Free_distribution_in_subscriber_group__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Free_distribution_in_subscriber_group__c'));                 
+                } if(String.isBlank(supplierContractObj.Restrictions_for_subscriber_charges__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Restrictions_for_subscriber_charges__c'));                   
+                }if(String.isBlank(supplierContractObj.Anti_competitive_data_use_agreement__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Anti_competitive_data_use_agreement__c'));                   
+                }if(String.isBlank(supplierContractObj.Data_Purge_Required_upon_Termination__c)) {
+                   returnVal.add(fieldApiLabelMap.get('Data_Purge_Required_upon_Termination__c'));
+                }if(String.isBlank(supplierContractObj.Preferred_vendor_supplier_terms_exist__c)) {
+                   returnVal.add(fieldApiLabelMap.get('Preferred_vendor_supplier_terms_exist__c'));
+                }if(String.isBlank(supplierContractObj.Subscriber_Agreement_Required__c)) {
+                   returnVal.add(fieldApiLabelMap.get('Subscriber_Agreement_Required__c'));
+                }if(String.isBlank(supplierContractObj.Contract_required_subscriber_agreement__c) && (supplierContractObj.Subscriber_Agreement_Required__c != 'No' && supplierContractObj.Subscriber_Agreement_Required__c != 'Not Stated')) {
+                   returnVal.add(fieldApiLabelMap.get('Contract_required_subscriber_agreement__c'));	
+                }if(String.isBlank(supplierContractObj.Term_type__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Term_type__c')); 
+                 
+                /*}if(String.isBlank(supplierContractObj.Supplier_Renewal_Process__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Supplier_Renewal_Process__c')); */                 
+                }   
+                /*  
+                if(supplierContractObj.Supplier_Renewal_Process__c == 'Other' && String.isBlank(supplierContractObj.Custom_Renewal_Process_If_Other__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Custom_Renewal_Process_If_Other__c'));                   
+                }   
+                */  
+                  
+                /*  
+                 * if(supplierContractObj.Supplier_Termination_Process__c == 'Other' && String.isBlank(supplierContractObj.Custom_Termination_Process_If_Other__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Custom_Termination_Process_If_Other__c'));                   
+                }   
+                */  
+                if(String.isBlank(supplierContractObj.Supplier_data_quality_warranties_exist__c)) {    
+                   returnVal.add(fieldApiLabelMap.get('Supplier_data_quality_warranties_exist__c'));    
+                }if(String.isBlank(supplierContractObj.Supplier_warranties_comply_with_GDPR__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Supplier_warranties_comply_with_GDPR__c'));  
+                }if(String.isBlank(supplierContractObj.Indemnity_for_3rd_party_IPR_infringement__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Indemnity_for_3rd_party_IPR_infringement__c'));  
+                }if(String.isBlank(supplierContractObj.Supplier_warranties_comply_with_applicab__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Supplier_warranties_comply_with_applicab__c'));  
+                }if(String.isBlank(supplierContractObj.IPR_warranties_exist__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('IPR_warranties_exist__c'));  
+                }if(String.isBlank(supplierContractObj.Indemnity_for_claims_from_information__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Indemnity_for_claims_from_information__c')); 
+                }if(String.isBlank(supplierContractObj.Direct_loss_is_excluded_for_Supplier__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Direct_loss_is_excluded_for_Supplier__c'));  
+                }if(String.isBlank(supplierContractObj.Contract_silent_on_suppliers_liabilities__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Contract_silent_on_suppliers_liabilities__c'));                  
+                }if(String.isBlank(supplierContractObj.Level_playing_field_warranties_exist__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Level_playing_field_warranties_exist__c'));  
+                } if(String.isBlank(supplierContractObj.Indirect_loss_is_excluded_for_Supplier__c)) {    
+                   returnVal.add(fieldApiLabelMap.get('Indirect_loss_is_excluded_for_Supplier__c'));    
+                }if(String.isBlank(supplierContractObj.Supplier_ethical_code_Status__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Supplier_ethical_code_Status__c'));  
+                }if(String.isBlank(supplierContractObj.Indirect_loss_is_excluded_for_Refinitiv__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Indirect_loss_is_excluded_for_Refinitiv__c'));   
+                }if(String.isBlank(supplierContractObj.Direct_loss_is_excluded_for_Refinitiv__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Direct_loss_is_excluded_for_Refinitiv__c')); 
+                //}if(supplierContractObj.Include_liability_cap_for_vendor__c == null && supplierContractObj.Vendors_liabilities_uncapped__c == 'Yes') {  
+                 //  returnVal.add(fieldApiLabelMap.get('Include_liability_cap_for_vendor__c'));      //CPT-86            
+                }if(String.isBlank(supplierContractObj.Contract_silent_on_vendors_liabilities__c)) {    
+                   returnVal.add(fieldApiLabelMap.get('Contract_silent_on_vendors_liabilities__c'));                    
+                }if(String.isBlank(supplierContractObj.Vendors_liabilities_uncapped__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Vendors_liabilities_uncapped__c'));  
+                }if(String.isBlank(supplierContractObj.Automatic_successor_assignment_exists__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Automatic_successor_assignment_exists__c')); 
+                }if(String.isBlank(supplierContractObj.Right_to_terminate_in_case_of_assignment__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Right_to_terminate_in_case_of_assignment__c'));  
+                }if(String.isBlank(supplierContractObj.When_can_vendor_assign_the_contract__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('When_can_vendor_assign_the_contract__c'));                   
+                }if(String.isBlank(supplierContractObj.Non_standard_confidentiality_clause__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Non_standard_confidentiality_clause__c'));   
+                }if(String.isBlank(supplierContractObj.Support_provision_outlined_by_supplier__c)) {    
+                   returnVal.add(fieldApiLabelMap.get('Support_provision_outlined_by_supplier__c'));                    
+                }if(String.isBlank(supplierContractObj.Vendor_to_provide_technical_documents__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Vendor_to_provide_technical_documents__c'));                 
+                }if(String.isBlank(supplierContractObj.Free_product_access__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Free_product_access__c'));   
+                }if(String.isBlank(supplierContractObj.Does_a_separate_SLA_document_exist__c)) {    
+                   returnVal.add(fieldApiLabelMap.get('Does_a_separate_SLA_document_exist__c'));    
+                }
+                //if(String.isBlank(supplierContractObj.Supplier_Contract_Reference__c)) {   
+                  // returnVal.add(fieldApiLabelMap.get('Supplier_Contract_Reference__c'));   
+               // }
+                if(String.isBlank(supplierContractObj.Reporting_Requirements__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Reporting_Requirements__c'));    
+                }if(String.isBlank(supplierContractObj.Vendor_liable_for_bank_transfer_charges__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Vendor_liable_for_bank_transfer_charges__c'));   
+                }if(String.isBlank(supplierContractObj.Right_to_Audit_Vendor__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Right_to_Audit_Vendor__c'));
+                }if(supplierContractObj.Right_to_Audit_Vendor__c == 'Yes'){		//CPT-86
+                    if(String.isBlank(supplierContractObj.Audit_Guidelines__c)) {  
+                     returnVal.add(fieldApiLabelMap.get('Audit_Guidelines__c'));                     
+                    }if(String.isBlank(supplierContractObj.Audit_Frequency__c)) {   
+                       returnVal.add(fieldApiLabelMap.get('Audit_Frequency__c'));                   
+                    }if(String.isBlank(supplierContractObj.Situations_where_liable_for_audit_costs__c)) {
+                       returnVal.add(fieldApiLabelMap.get('Situations_where_liable_for_audit_costs__c'));
+                    }
+                }
+                
+                 
+                  
+                  
+                /*  
+                if(supplierContractObj.Group_License__c == 'No' && String.isBlank(supplierContractObj.Explanation_of_why_not__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Explanation_of_why_not__c'));    
+                }if(supplierContractObj.Group_License__c == 'Yes' && String.isBlank(supplierContractObj.Group_Definition__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Group_Definition__c'));  
+                }if(supplierContractObj.Group_License__c == 'Yes' && String.isBlank(supplierContractObj.Group_List_needs_to_be_provided__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Group_List_needs_to_be_provided__c'));   
+                }if(supplierContractObj.Group_License__c == 'Yes' && String.isBlank(supplierContractObj.Updates_to_Group_List_Required__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Updates_to_Group_List_Required__c'));    
+                }if(supplierContractObj.Group_License__c == 'Yes' && supplierContractObj.Frequency_of_Updates__c == null) { 
+                   returnVal.add(fieldApiLabelMap.get('Frequency_of_Updates__c'));  
+                }if(supplierContractObj.Group_License__c == 'Yes' && String.isBlank(supplierContractObj.Group_list_changes_require_approval__c  )) {    
+                   returnVal.add(fieldApiLabelMap.get('Group_list_changes_require_approval__c   '));    
+            
+                }   
+                */  
+                
+                 /*
+                if(supplierContractObj.Renewal_Start_Date__c == null) { 
+                   returnVal.add(fieldApiLabelMap.get('Renewal_Start_Date__c'));    
+                }if(supplierContractObj.Renewal_End_Date__c == null) {  
+                   returnVal.add(fieldApiLabelMap.get('Renewal_End_Date__c'));  
+                }*/
+            /*CPT-3 Starts*/    
+            } else{
+                if(supplierContractObj.Effective_Date__c == null) { 
+                   returnVal.add(fieldApiLabelMap.get('Effective_Date__c')); 
+                }if(supplierContractObj.Last_Commitment_Date_Vendor__c != null && String.isBlank(supplierContractObj.Reason_Last_Commitment_Vendor__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Reason_Last_Commitment_Vendor__c'));  //sfcf-2092
+                }if(supplierContractObj.Reason_Last_Commitment_Vendor__c == 'Other' && String.isBlank(supplierContractObj.Reason_Last_Commitment_Vendor_Other__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Reason_Last_Commitment_Vendor_Other__c'));  //sfcf-2092
+                }
+                if(String.isBlank(supplierContractObj.Account__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Account__c'));
+                } if(String.isBlank(supplierContractObj.Is_Handover__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Is_Handover__c'));   
+                } if(supplierContractObj.Is_Handover__c == 'Yes' && String.isBlank(supplierContractObj.Vendor_s_Handover_BU__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Vendor_s_Handover_BU__c')); 
+                } if(String.isBlank(supplierContractObj.Contract_Description__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Contract_Description__c')); 
+                } if(String.isBlank(supplierContractObj.Contract_Type__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Contract_Type__c')); 
+                } if(String.isBlank(supplierContractObj.Form_of_Agreement__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Form_of_Agreement__c')); 
+                } if(String.isBlank(supplierContractObj.Group_License__c)) {  
+                    returnVal.add(fieldApiLabelMap.get('Group_License__c'));  
+                } if(String.isBlank(supplierContractObj.Supplier_accepts_the_use_of_third_partie__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Supplier_accepts_the_use_of_third_partie__c')); 
+                } if(String.isBlank(supplierContractObj.Term_type__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Term_type__c')); 
+                } if(String.isBlank(supplierContractObj.Automatic_successor_assignment_exists__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Automatic_successor_assignment_exists__c')); 
+                } if(String.isBlank(supplierContractObj.Support_provision_outlined_by_supplier__c)) {    
+                   returnVal.add(fieldApiLabelMap.get('Support_provision_outlined_by_supplier__c')); 
+                } if(String.isBlank(supplierContractObj.Reporting_Requirements__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Reporting_Requirements__c'));  
+                } if(String.isBlank(supplierContractObj.Right_to_Audit_Vendor__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Right_to_Audit_Vendor__c'));      
+                }
+            }
+			/*CPT-3 Ends*/
+			if(supplierContractObj.Group_License__c == 'Yes' && String.isBlank(supplierContractObj.Affiliates_Definition__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Affiliates_Definition__c')); 
+			}if(supplierContractObj.Group_License__c == 'No' && String.isBlank(supplierContractObj.Explanation_of_why_not__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Explanation_of_why_not__c'));    
+            }if(supplierContractObj.Group_License__c == 'Yes' && String.isBlank(supplierContractObj.Group_Definition__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Group_Definition__c'));  
+            }if(supplierContractObj.Group_License__c == 'Yes' && String.isBlank(supplierContractObj.Group_List_needs_to_be_provided__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Group_List_needs_to_be_provided__c'));   
+            }if(supplierContractObj.Group_List_needs_to_be_provided__c == 'Yes' && String.isBlank(supplierContractObj.Updates_to_Group_List_Required__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Updates_to_Group_List_Required__c'));    
+            }if(supplierContractObj.Updates_to_Group_List_Required__c == 'Yes' && supplierContractObj.Frequency_of_Updates__c == null) { 
+                   returnVal.add(fieldApiLabelMap.get('Frequency_of_Updates__c'));  
+            }if(supplierContractObj.Updates_to_Group_List_Required__c == 'Yes' && String.isBlank(supplierContractObj.Group_list_changes_require_approval__c)) {    
+                   returnVal.add(fieldApiLabelMap.get('Group_list_changes_require_approval__c'));    
+            } if((supplierContractObj.Group_License__c == 'Yes' && supplierContractObj.Scope_of_Group_Coverage__c == null)) {   
+                   returnVal.add(fieldApiLabelMap.get('Scope_of_Group_Coverage__c'));                   
+            } if((supplierContractObj.Scope_of_Group_Coverage__c == 'Heritage LSEG (excluding certain entities)'|| supplierContractObj.Scope_of_Group_Coverage__c == 'Heritage RFT (excluding certain entities)'|| supplierContractObj.Scope_of_Group_Coverage__c == 'New LSEG (excluding certain entities)') && String.isBlank(supplierContractObj.Excluded_Entities__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Excluded_Entities__c'));                   
+            }if((supplierContractObj.Scope_of_Group_Coverage__c == 'Limited permitted entities only') && String.isBlank(supplierContractObj.Permitted_Entities__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Permitted_Entities__c'));                   
+            }  if(supplierContractObj.Scope_of_Group_Coverage__c == 'Other' && String.isBlank(supplierContractObj.Details_of_Other_Scope_of_Group_Coverage__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Details_of_Other_Scope_of_Group_Coverage__c'));                   
+            } if(supplierContractObj.Supplier_accepts_the_use_of_third_partie__c == 'Yes' && String.isBlank(supplierContractObj.Approval_of_Service_Facilitators__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Approval_of_Service_Facilitators__c'));                  
+            } if(supplierContractObj.Supplier_accepts_the_use_of_third_partie__c == 'Yes' && String.isBlank(supplierContractObj.Service_Facilitator_Definition__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Service_Facilitator_Definition__c')); 
+			} if(String.isBlank(supplierContractObj.Details_of_Supplier_Conditions_Text__c) && supplierContractObj.Restrictions_for_subscriber_charges__c == 'Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Details_of_Supplier_Conditions_Text__c'));
+            } if(supplierContractObj.Vendor_to_provide_technical_documents__c == 'Yes' && String.isBlank(supplierContractObj.Overview_of_required_documentation__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Overview_of_required_documentation__c'));                   
+            } if(supplierContractObj.Contract_required_subscriber_agreement__c == 'Yes' && String.isBlank(supplierContractObj.Subscriber_agreement_updates_required__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Subscriber_agreement_updates_required__c')); 			
+			} if(String.isBlank(supplierContractObj.Exceptions_to_website_use__c) && supplierContractObj.Website_Usage_rights__c == 'Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Exceptions_to_website_use__c'));
+            } if(supplierContractObj.Initial_Term_Length__c == null) {   
+                   returnVal.add(fieldApiLabelMap.get('Initial_Term_Length__c'));   
+            } if(supplierContractObj.Initial_Term_Length__c  == 'Other' && String.isBlank(supplierContractObj.Initial_Term_Length_Other__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Initial_Term_Length_Other__c'));    
+            } if(supplierContractObj.Renewal_Start_Date__c == null && supplierContractObj.Term_type__c != 'Terminate Anytime') {   
+                   returnVal.add(fieldApiLabelMap.get('Renewal_Start_Date__c'));   
+            } if(supplierContractObj.Record_Retention_Period_Post_Termination__c  == 'Other' && String.isBlank(supplierContractObj.Record_Period_Other_Post_Termination__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Record_Period_Other_Post_Termination__c'));    
+            } if(supplierContractObj.Term_Length__c  == 'Other' && String.isBlank(supplierContractObj.Renewal_Term_Length_Other__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Renewal_Term_Length_Other__c'));    
+            } if(supplierContractObj.Renewal_End_Date__c == null && supplierContractObj.Term_type__c != 'Terminate Anytime') {  
+                   returnVal.add(fieldApiLabelMap.get('Renewal_End_Date__c'));  
+            } if(supplierContractObj.Term_Length__c == null && (supplierContractObj.Term_type__c == 'Auto-Renewable' || supplierContractObj.Term_type__c == 'Manual Renewable')) {    
+                   returnVal.add(fieldApiLabelMap.get('Term_Length__c'));  
+			} if(String.isBlank(supplierContractObj.Supplier_Termination_Process__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Supplier_Termination_Process__c'));                  
+            }  if(supplierContractObj.Contractual_Price_Increase__c  == 'Yes' && String.isBlank(supplierContractObj.Contractual_Price_Increase_Details__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Contractual_Price_Increase_Details__c'));    
+            } if(supplierContractObj.Supplier_Termination_Process__c == 'Other' && String.isBlank(supplierContractObj.Custom_Termination_Process_If_Other__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Custom_Termination_Process_If_Other__c'));                   
+            } if(!String.isBlank(supplierContractObj.Termination_Initiated_by__c) && String.isBlank(supplierContractObj.Reasons_for_Termination__c)) {    
+                   returnVal.add(fieldApiLabelMap.get('Reasons_for_Termination__c'));                   
+            } if(supplierContractObj.Level_playing_field_warranties_exist__c == 'Yes' && String.isBlank(supplierContractObj.Details_of_level_playing_field_policy__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Details_of_level_playing_field_policy__c'));                 
+            } if(supplierContractObj.Direct_loss_is_excluded_for_Supplier__c == 'No' && String.isBlank(supplierContractObj.Direct_loss_is_capped_for_Supplier__c)) { 
+                   returnVal.add(fieldApiLabelMap.get('Direct_loss_is_capped_for_Supplier__c'));                 
+            } if(supplierContractObj.Direct_loss_is_excluded_for_Refinitiv__c == 'No' && String.isBlank(supplierContractObj.Direct_loss_is_capped_for_Refinitiv__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Direct_loss_is_capped_for_Refinitiv__c'));                   
+            } if(supplierContractObj.Include_liability_cap_for_supplier__c != null && supplierContractObj.Include_liability_cap_supplier_currency__c == null) {   
+                   returnVal.add(fieldApiLabelMap.get('Include_liability_cap_supplier_currency__c'));    
+            } if(String.isBlank(supplierContractObj.Include_liability_cap_vendor_currency__c) && supplierContractObj.Include_liability_cap_for_vendor__c != null && supplierContractObj.Vendors_liabilities_uncapped__c == 'Yes') { 
+                   returnVal.add(fieldApiLabelMap.get('Include_liability_cap_vendor_currency__c'));                 
+            } if(String.isBlank(supplierContractObj.Vendor_Liability_Cap_Variable__c) && supplierContractObj.Include_liability_cap_for_vendor__c == null && supplierContractObj.Vendors_liabilities_uncapped__c == 'Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Include_liability_cap_for_vendor__c'));
+            } if(String.isBlank(supplierContractObj.Supplier_Liability_Cap_Variable__c) && supplierContractObj.Include_liability_cap_for_supplier__c == null && supplierContractObj.Direct_loss_is_capped_for_Supplier__c == 'Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Include_liability_cap_for_supplier__c'));
+            } if(supplierContractObj.Right_to_terminate_in_case_of_assignment__c == 'Yes' && String.isBlank(supplierContractObj.Change_control_termination_rights_detail__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Change_control_termination_rights_detail__c')); 
+			} if(supplierContractObj.Law_of_Agreement_Country__c == 'England and Wales' && supplierContractObj.Death_in_service_liability_UK__c == null) {   
+                   returnVal.add(fieldApiLabelMap.get('Death_in_service_liability_UK__c')); 
+			} if(supplierContractObj.Supplier_ethical_code_Status__c  == 'Agreed Supplier Standard' && String.isBlank(supplierContractObj.Supplier_s_supply_chain_ethical_code__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Supplier_s_supply_chain_ethical_code__c'));    
+            } if(supplierContractObj.Additional_Supplier_Warranties__c == 'Yes' && String.isBlank(supplierContractObj.Details_of_Additional_Supplier_Warrantie__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Details_of_Additional_Supplier_Warrantie__c'));                  
+            } if(supplierContractObj.Supplier_data_quality_warranties_exist__c == 'Yes' && String.isBlank(supplierContractObj.Details_of_Supplier_Data_Quality_Warrant__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Details_of_Supplier_Data_Quality_Warrant__c'));                  
+            } if(supplierContractObj.Notice_minor_data_content_changes__c == 'Other' && String.isBlank(supplierContractObj.Notice_Other_Minor_Data_Changes__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Notice_Other_Minor_Data_Changes__c')); 
+			} if(supplierContractObj.Notice_major_data_content_changes__c == 'Other' && String.isBlank(supplierContractObj.Notice_Other_Major_Data_Changes__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Notice_Other_Major_Data_Changes__c')); 
+			} if(supplierContractObj.Notice_minor_technical_changes__c == 'Other' && String.isBlank(supplierContractObj.Notice_Other_Minor_Technical_Changes__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Notice_Other_Minor_Technical_Changes__c')); 
+			} if(supplierContractObj.Notice_major_technical_changes__c == 'Other' && String.isBlank(supplierContractObj.Notice_Other_Major_Technical_Changes__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Notice_Other_Major_Technical_Changes__c')); 
+			} if(supplierContractObj.Service_Level_Terms__c == 'Yes' && String.isBlank(supplierContractObj.Details_of_Service_Level_Terms__c)) {  
+                   returnVal.add(fieldApiLabelMap.get('Details_of_Service_Level_Terms__c')); 
+			} if(supplierContractObj.Free_product_access__c == 'Yes' && String.isBlank(supplierContractObj.Brief_Summary__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Brief_Summary__c')); 
+			} if(supplierContractObj.Vendor_to_provide_technical_documents__c == 'Yes' && String.isBlank(supplierContractObj.Vendor_to_provide_document_updates__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Vendor_to_provide_document_updates__c')); 
+			} if(supplierContractObj.Does_a_separate_SLA_document_exist__c  == 'Yes' && String.isBlank(supplierContractObj.Supplier_Contract_Reference__c)) {   	returnVal.add(fieldApiLabelMap.get('Supplier_Contract_Reference__c'));    
+            }  if(supplierContractObj.Fee_change_frequency__c  == 'Other' && String.isBlank(supplierContractObj.Frequency_Other_of_Fee_Changes__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Frequency_Other_of_Fee_Changes__c'));    
+            } if(supplierContractObj.Notice_for_changes_to_royalty_fees__c  == 'Other' && String.isBlank(supplierContractObj.Notice_Other_Royalty_Fee_Changes__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Notice_Other_Royalty_Fee_Changes__c'));    
+            } if(supplierContractObj.Limit_for_Report_Corrections__c == 'Yes' && String.isBlank(supplierContractObj.Details_of_Corrected_Reporting__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Details_of_Corrected_Reporting__c')); 
+			} if(supplierContractObj.Record_Retention_Period__c == 'Other' && String.isBlank(supplierContractObj.Audit_Record_Retention_Period_Other__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Audit_Record_Retention_Period_Other__c')); 
+			}if(supplierContractObj.Situations_where_liable_for_audit_costs__c == 'Other / Custom' && String.isBlank(supplierContractObj.Other_Circumstances__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Other_Circumstances__c')); 
+			} if(supplierContractObj.Notice_Period__c == 'Other' && String.isBlank(supplierContractObj.Notice_Other_Audit__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Notice_Other_Audit__c')); 		
+            } if(supplierContractObj.Audit_Frequency__c  == 'Other' && String.isBlank(supplierContractObj.Other_Audit_Frequency__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Other_Audit_Frequency__c'));    
+            } if(supplierContractObj.Maximum_Audit_Period__c  == 'Other' && String.isBlank(supplierContractObj.Maximum_Audit_Period_Other__c)) {   
+                   returnVal.add(fieldApiLabelMap.get('Maximum_Audit_Period_Other__c'));    
+            } if(supplierContractObj.Liability_of_Interest__c == 'Yes' && String.isBlank(supplierContractObj.Basis_for_Interest_calculation__c)) {   
+                       returnVal.add(fieldApiLabelMap.get('Basis_for_Interest_calculation__c')); 
+            } 
+            /*CPT-6 Starts*/
+                
+                if(String.isBlank(supplierContractObj.Vendor_Activity_Description__c) && String.valueOf(supplierContractObj.Regulatory_Requirements__c)=='Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Vendor_Activity_Description__c'));
+                }
+                if(String.isBlank(supplierContractObj.Regulatory_History__c)&& String.valueOf(supplierContractObj.Regulatory_Requirements__c)=='Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Regulatory_History__c'));
+                }
+                if(String.isBlank(supplierContractObj.External_Dependency__c)&& String.valueOf(supplierContractObj.Regulatory_Requirements__c)=='Yes') {
+                   returnVal.add(fieldApiLabelMap.get('External_Dependency__c'));
+                }
+                if(String.isBlank(supplierContractObj.Supplier_Dependency__c)&& String.valueOf(supplierContractObj.Regulatory_Requirements__c)=='Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Supplier_Dependency__c'));
+                }
+                if(String.isBlank(supplierContractObj.Outsourcing__c)&& String.valueOf(supplierContractObj.Regulatory_Requirements__c)=='Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Outsourcing__c'));
+                }
+                if(String.isBlank(supplierContractObj.Legal_Oversight__c)&& String.valueOf(supplierContractObj.Regulatory_Requirements__c)=='Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Legal_Oversight__c'));
+                }
+                if(String.isBlank(supplierContractObj.Verification_of_Outsourcing__c)&& String.valueOf(supplierContractObj.Regulatory_Requirements__c)=='Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Verification_of_Outsourcing__c'));
+                }
+                if(String.isBlank(supplierContractObj.Supplier_Co_operation__c)&& String.valueOf(supplierContractObj.Regulatory_Requirements__c)=='Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Supplier_Co_operation__c'));
+                }
+                if(String.isBlank(supplierContractObj.Termination_of_Outsourcing__c)&& String.valueOf(supplierContractObj.Regulatory_Requirements__c)=='Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Termination_of_Outsourcing__c'));
+                }
+                if(String.isBlank(supplierContractObj.Details_regulation__c )&& String.valueOf(supplierContractObj.Regulatory_Requirements__c)=='Yes') {
+                   returnVal.add(fieldApiLabelMap.get('Details_regulation__c'));
+                }
+                /*CPT-6 Ends*/
+                
+        //} else {    
+            //returnVal.add('Invalid Contract');  
+        //}   
+        System.debug('returnVal========='+returnVal);   
+        if(returnVal.size() > 0) {  
+            System.debug('Validation Fail');    
+        } else {    
+            System.debug('Validation success'); 
+           /* List<Supplier_Contract__c> supplierContractList = new List<Supplier_Contract__c>(); 
+            supplierContractList.add(supplierContractObj);  
+            System.debug('supplierContractList>>>'+supplierContractList);   
+            /*  
+             *  
+             * Commented for initial deployment. To get list of all dependent CLM class 
+             *  
+              
+            RSCM_CLMRevelationSendForSignature.SendForSignature(supplierContractList);*/  
+        }   
+        System.debug('returnVal---'+returnVal); 
+        finalResult.add(returnVal);
+        return finalResult;   
+    }   
+}
