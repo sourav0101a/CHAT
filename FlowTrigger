@@ -36,3 +36,85 @@ trigger SupplierContractValidation on Supplier_Contract__c (before insert, befor
         }
     }
 }
+@isTest
+public class SupplierContractValidationTest {
+    
+    @testSetup
+    static void setupTestData() {
+        // Create a valid Supplier Contract record
+        Supplier_Contract__c validContract = new Supplier_Contract__c(
+            Contracting_Entity__c = 'Valid Entity',
+            Effective_Date__c = Date.today(),
+            Form_of_Agreement__c = 'Contract',
+            Is_Handover__c = 'No',
+            Contract_Description__c = 'Test Description',
+            Contract_Type__c = 'Data License',
+            Used_Agreement_Template__c = 'Standard',
+            Law_of_Agreement_Country__c = 'USA'
+        );
+        insert validContract;
+    }
+    
+    @isTest
+    static void testValidSupplierContract() {
+        Test.startTest();
+        Supplier_Contract__c contract = new Supplier_Contract__c(
+            Contracting_Entity__c = 'Valid Entity',
+            Effective_Date__c = Date.today(),
+            Form_of_Agreement__c = 'Contract',
+            Is_Handover__c = 'No',
+            Contract_Description__c = 'Test Description',
+            Contract_Type__c = 'Data License',
+            Used_Agreement_Template__c = 'Standard',
+            Law_of_Agreement_Country__c = 'USA'
+        );
+
+        // Should insert successfully
+        insert contract;
+        Test.stopTest();
+    }
+
+    @isTest
+    static void testInvalidSupplierContract() {
+        Test.startTest();
+        Supplier_Contract__c contract = new Supplier_Contract__c(
+            // Missing required fields
+            Effective_Date__c = null,
+            Form_of_Agreement__c = '',
+            Contract_Type__c = ''
+        );
+
+        // Expect a DMLException due to missing fields
+        try {
+            insert contract;
+            System.assert(false, 'Expected an exception, but none was thrown');
+        } catch (DmlException e) {
+            System.debug('Expected Error: ' + e.getMessage());
+            System.assert(e.getMessage().contains('Missing Required Fields'), 'Error message does not contain expected text.');
+        }
+        Test.stopTest();
+    }
+    
+    @isTest
+    static void testBulkInsert() {
+        Test.startTest();
+        List<Supplier_Contract__c> contracts = new List<Supplier_Contract__c>();
+        
+        for (Integer i = 0; i < 5; i++) {
+            contracts.add(new Supplier_Contract__c(
+                Contracting_Entity__c = 'Valid Entity ' + i,
+                Effective_Date__c = Date.today(),
+                Form_of_Agreement__c = 'Contract',
+                Is_Handover__c = 'No',
+                Contract_Description__c = 'Test Description ' + i,
+                Contract_Type__c = 'Data License',
+                Used_Agreement_Template__c = 'Standard',
+                Law_of_Agreement_Country__c = 'USA'
+            ));
+        }
+
+        // Bulk insert should work fine
+        insert contracts;
+        Test.stopTest();
+    }
+}
