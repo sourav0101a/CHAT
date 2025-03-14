@@ -1,0 +1,98 @@
+public class RSCM_RequiredFieldForContract {
+    @InvocableMethod
+    public static List<List<String>> checkRequiredField(List<String> supplierContractId) {  
+        List<List<String>> finalResult = new List<List<String>>();   
+        List<String> returnVal = new List<String>();    
+        Map<String, String> fieldApiLabelMap = new Map<String, String>(); 
+        
+        String objectApiName = 'Supplier_Contract__c';  
+        Map<String, Schema.SObjectField> objectSchemaFields = Schema.getGlobalDescribe().get(objectApiName).getDescribe().fields.getMap();  
+        
+        for (Schema.SObjectField field : objectSchemaFields.values()) {  
+            Schema.DescribeFieldResult fieldDesc = field.getDescribe();  
+            fieldApiLabelMap.put(fieldDesc.getName(), fieldDesc.getLabel()); 
+        }   
+        
+        Supplier_Contract__c supplierContractObj = [
+            SELECT Id, Contracting_Entity__c, Service_Facilitator_Definition__c, 
+                   Approval_of_Service_Facilitators__c, Supplier_Renewal_Process__c, 
+                   Custom_Renewal_Process_If_Other__c, Supplier_Termination_Process__c, 
+                   Custom_Termination_Process_If_Other__c, Reasons_for_Termination__c, 
+                   Right_to_Audit_Vendor__c, Audit_Frequency__c, 
+                   Basis_for_Interest_calculation__c, Details_of_level_playing_field_policy__c, 
+                   Direct_loss_is_capped_for_Refinitiv__c, Include_liability_cap_for_vendor__c, 
+                   Include_liability_cap_vendor_currency__c, 
+                   Contract_silent_on_vendors_liabilities__c, 
+                   Contract_silent_on_suppliers_liabilities__c, 
+                   When_can_vendor_assign_the_contract__c, 
+                   Preferred_vendor_supplier_terms_exist__c, Subscriber_Agreement_Required__c, 
+                   Restrictions_for_subscriber_charges__c, 
+                   Anti_competitive_data_use_agreement__c, 
+                   Free_distribution_in_subscriber_group__c, 
+                   Support_provision_outlined_by_supplier__c, Contract_Description__c, 
+                   Liability_of_Interest__c, Vendor_to_provide_technical_documents__c, 
+                   Account__c, Contract_Type__c, Form_of_Agreement__c, 
+                   Used_Agreement_Template__c, Law_of_Agreement_Country__c, 
+                   Status__c, Sub_Status__c, Effective_Date__c, 
+                   Last_Commitment_Date_Vendor__c, Reason_Last_Commitment_Vendor__c,
+                   Reason_Last_Commitment_Vendor_Other__c, Is_Handover__c, 
+                   Vendor_s_Handover_BU__c, Content_to_Vendor_on_Exclusive_Basis__c, 
+                   Group_License__c, Explanation_of_why_not__c, 
+                   Group_Definition__c, Group_List_needs_to_be_provided__c, 
+                   Updates_to_Group_List_Required__c, Frequency_of_Updates__c, 
+                   Group_list_changes_require_approval__c, 
+                   Supplier_accepts_the_use_of_third_partie__c, Term_type__c, 
+                   Termination_Effective_Date__c, Termination_Initiated_by__c, 
+                   Renewal_Start_Date__c, Term_Length__c, Initial_Term_Length__c, 
+                   Renewal_End_Date__c, Reporting_Requirements__c, Audit_Guidelines__c, 
+                   Vendor_liable_for_bank_transfer_charges__c, 
+                   Supplier_data_quality_warranties_exist__c, 
+                   Level_playing_field_warranties_exist__c, IPR_warranties_exist__c, 
+                   Indirect_loss_is_excluded_for_Refinitiv__c, 
+                   Direct_loss_is_excluded_for_Refinitiv__c, Vendors_liabilities_uncapped__c, 
+                   Indirect_loss_is_excluded_for_Supplier__c, 
+                   Direct_loss_is_excluded_for_Supplier__c, 
+                   Indemnity_for_3rd_party_IPR_infringement__c, 
+                   Indemnity_for_claims_from_information__c, 
+                   Supplier_warranties_comply_with_applicab__c, 
+                   Supplier_warranties_comply_with_GDPR__c, 
+                   Automatic_successor_assignment_exists__c, 
+                   Right_to_terminate_in_case_of_assignment__c, 
+                   Non_standard_confidentiality_clause__c, Supplier_ethical_code_Status__c, 
+                   Does_a_separate_SLA_document_exist__c, Supplier_Contract_Reference__c, 
+                   Free_product_access__c, Situations_where_liable_for_audit_costs__c, 
+                   Contract_required_subscriber_agreement__c, 
+                   Data_Purge_Required_upon_Termination__c, 
+                   Details_of_Supplier_Conditions_Text__c, Vendor_Liability_Cap_Variable__c,
+                   Regulatory_Requirements__c, Vendor_Activity_Description__c, 
+                   Regulatory_History__c, External_Dependency__c, 
+                   Supplier_Dependency__c, Outsourcing__c, Legal_Oversight__c, 
+                   Verification_of_Outsourcing__c, Supplier_Co_operation__c, 
+                   Termination_of_Outsourcing__c, Details_regulation__c
+            FROM Supplier_Contract__c
+            WHERE Id = :supplierContractId
+            LIMIT 1
+        ];  
+        
+        Map<String, Object> requiredFields = new Map<String, Object>{
+            'Contracting_Entity__c' => supplierContractObj.Contracting_Entity__c,
+            'Effective_Date__c' => supplierContractObj.Effective_Date__c,
+            'Form_of_Agreement__c' => supplierContractObj.Form_of_Agreement__c,
+            'Is_Handover__c' => supplierContractObj.Is_Handover__c,
+            'Contract_Description__c' => supplierContractObj.Contract_Description__c,
+            'Contract_Type__c' => supplierContractObj.Contract_Type__c,
+            'Used_Agreement_Template__c' => supplierContractObj.Used_Agreement_Template__c,
+            'Law_of_Agreement_Country__c' => supplierContractObj.Law_of_Agreement_Country__c
+        };
+
+        for (String field : requiredFields.keySet()) {
+            if (requiredFields.get(field) == null || String.isBlank(String.valueOf(requiredFields.get(field)))) {
+                returnVal.add(fieldApiLabelMap.get(field));
+            }
+        }
+        
+        System.debug('Validation Result: ' + returnVal); 
+        finalResult.add(returnVal);
+        return finalResult;   
+    }   
+}
