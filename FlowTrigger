@@ -36,6 +36,7 @@ trigger SupplierContractValidation on Supplier_Contract__c (before insert, befor
         }
     }
 }
+
 @isTest
 public class SupplierContractValidationTest {
     
