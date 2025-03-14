@@ -1,0 +1,38 @@
+trigger SupplierContractValidation on Supplier_Contract__c (before insert, before update) {
+    Map<String, String> fieldApiLabelMap = new Map<String, String>();
+    String objectApiName = 'Supplier_Contract__c';
+    Map<String, Schema.SObjectField> objectSchemaFields = Schema.getGlobalDescribe().get(objectApiName).getDescribe().fields.getMap();
+    
+    // Get field labels for error messages
+    for (Schema.SObjectField field : objectSchemaFields.values()) {  
+        Schema.DescribeFieldResult fieldDesc = field.getDescribe();  
+        fieldApiLabelMap.put(fieldDesc.getName(), fieldDesc.getLabel()); 
+    }
+
+    for (Supplier_Contract__c sc : Trigger.new) {
+        List<String> missingFields = new List<String>();
+
+        Map<String, Object> requiredFields = new Map<String, Object>{
+            'Contracting_Entity__c' => sc.Contracting_Entity__c,
+            'Effective_Date__c' => sc.Effective_Date__c,
+            'Form_of_Agreement__c' => sc.Form_of_Agreement__c,
+            'Is_Handover__c' => sc.Is_Handover__c,
+            'Contract_Description__c' => sc.Contract_Description__c,
+            'Contract_Type__c' => sc.Contract_Type__c,
+            'Used_Agreement_Template__c' => sc.Used_Agreement_Template__c,
+            'Law_of_Agreement_Country__c' => sc.Law_of_Agreement_Country__c
+        };
+
+        // Check for missing values
+        for (String field : requiredFields.keySet()) {
+            if (requiredFields.get(field) == null || String.isBlank(String.valueOf(requiredFields.get(field)))) {
+                missingFields.add(fieldApiLabelMap.get(field));
+            }
+        }
+
+        // Prevent save if any required field is missing
+        if (!missingFields.isEmpty()) {
+            sc.addError('Missing Required Fields: ' + String.join(missingFields, ', '));
+        }
+    }
+}
