@@ -1,26 +1,2238 @@
-// audioPopupComponent.js
-import { LightningElement, track } from 'lwc';
+<template>
 
-export default class AudioPopupComponent extends LightningElement {
-    @track showModal = false;
-    imageSrc = 'https://example.com/image.jpg'; // Replace with your image URL
-    audioSrc = 'https://example.com/audio.mp3'; // Replace with your audio URL
-    modalContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'; // Replace with your content
+<lightning-card >
+   
 
-    handleImageClick() {
-        this.playAudio();
-    }
+    <div class="slds-card" style="background-color: white;">
 
-    playAudio() {
-        let audio = new Audio(this.audioSrc);
-        audio.play();
-    }
+        <lightning-record-edit-form record-id={recordId} object-api-name={objectApiName} onsuccess={handleSuccess}>
+            <lightning-messages></lightning-messages>
+            <div class="slds-m-around_x-small">
+                <template if:true={isLoaded}>
+                    <lightning-spinner alternative-text="Loading..." variant="brand" size="medium">
+                    </lightning-spinner>
+                </template>
+                    <div class="slds-grid slds-wrap" >
+                        <div class="slds-section slds-is-open slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Contract Parties">Contract Parties</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12" style="padding-top:6px">
+                            <lightning-output-field class="slds-border_bottom " field-name="Contract_Uid__c">
+                            </lightning-output-field>
+                        </div>
+								<div class="slds-col slds-size_6-of-12" style="padding-top:6px">
+									<lightning-output-field field-name="CAT_Contract_Number__c" class="slds-border_bottom ">
+									</lightning-output-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-output-field class="slds-border_bottom " field-name="CreatedById">
+                            </lightning-output-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-output-field class="slds-border_bottom "
+                                field-name="Supplier_Organisation_Account_Number__c">
+                            </lightning-output-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Contracting_Entity__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="OwnerId">
+                            </lightning-input-field>
+                        </div>
+								<div class="slds-section slds-is-open slds-col slds-size_12-of-12"
+									style="padding-top:6px">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Contract Summary">Contract Summary</span>
+                            </h3>
+                        </div>
 
-    openModal() {
-        this.showModal = true;
-    }
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Name">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Contract_Description__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Status__c" value={ValStatus}
+										onchange={handleStatus}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+                                aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="cfd1">View all dependencies</button>
+                                <!-- cfd1 = Core field dependencies 1 -->
+                        </div>
+                        <div class="slds-col slds-size_6-of-12 ">
+									<lightning-input-field field-name="Contract_Type__c" value={valContractType}
+										onchange={handleContractType}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="cfd2"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Sub_Status__c" value={ValSubStatus}
+										onchange={handleSubStatus}>
+									</lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+                                aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="cfd1">View all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Used_Agreement_Template__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Effective_Date__c">
+                            </lightning-input-field>
+                        </div>
+												<div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Last_Commitment_Date_Vendor__c" value={ValDateVendor}
+							onchange={handleDateVendor} >
+                            </lightning-input-field>
+							<button class="slds-button" aria-disabled="false" type="button"
+                                aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="cfd3">View all dependencies</button>
+							
+                        </div>
+						<div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Reason_Last_Commitment_Vendor__c" value={ValLastComVendor}
+							onchange={handleLastComVendor} disabled={disableLastComVendor}>
+                            </lightning-input-field>
+							<button class="slds-button" aria-disabled="false" type="button"
+                                aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="cfd3">View all dependencies</button>
+                        </div>
+						<div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Reason_Last_Commitment_Vendor_Other__c" value={ValLastComVendorOther}
+							onchange={handleLastComVendorOther} disabled={disableLastComVendorOther} >
+                            </lightning-input-field>
+							<button class="slds-button" aria-disabled="false" type="button"
+                                aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="cfd3">View all dependencies</button>
+                        </div>
+												
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Law_of_Agreement_Jurisdiction__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Account__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Form_of_Agreement__c" value={valFormofAgreement}
+										onchange={handleFormofAgreement}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" data-value="cfd2"
+										onclick={openModal}>View
+                                all dependencies</button>
 
-    closeModal() {
-        this.showModal = false;
-    }
-}
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Is_Handover__c" onchange={checkfieldName}
+										value={valHandoverContract}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" data-value="mfd15"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Law_of_Agreement_Country__c"
+										value={valLawofAgreementCountryc} onchange={handleLawofAgreementCountryc}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="agreementD1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="DRG_Request__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Secondary_Owner__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Business_Area__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Vendor_s_Handover_BU__c"
+										disabled={disableInputField} onchange={handleVendorsHandoverBU}
+										value={valVendorsHandoverBU}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" data-value="mfd15"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Regulatory_Requirements__c"
+										value={valRegulatoryRequirements} onchange={handleRegulatoryRequirements}>
+                            </lightning-input-field>
+									<button class="slds-button" data-value='regulatory' aria-disabled="false"
+										type="button" aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Requestor_Name__c">
+                            </lightning-input-field>
+                        </div>
+								<div class="slds-section slds-is-open slds-col slds-size_12-of-12"
+									style="padding-top:6px">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Cancellation">Cancellation</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Reason_For_Cancellation__c"
+										disabled={disableLegalFieldFourCancelled} value={valReasonForCancellation} onchange={handleReasonForCancellation}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="cfd1">View
+										all dependencies</button>
+                        </div>
+                    </div>
+
+                    <div class="slds-grid slds-wrap" >
+                        <div class="slds-section slds-is-open slds-col slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small" title="Group">Group</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Group_License__c"
+										onchange={checkfieldGroupLicense} value={valGroupLicense}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12 ">
+                            <lightning-input-field field-name="Affiliates_Definition__c"
+										disabled={disableGroupRelatedFieldOne} value={valAffiliatesDefinition}
+										onchange={handleAffiliatesDefinition}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12 ">
+                            <lightning-input-field field-name="Group_Definition__c"
+										disabled={disableGroupRelatedFieldOne} value={valGroupDefinition}
+										onchange={handleGroupDefinition}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Explanation_of_why_not__c"
+										disabled={disableGroupRelatedFieldTwo} value={valExplanationofwhynot}
+										onchange={handleExplanationofwhynot}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+
+                        </div>
+
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Scope_of_Group_Coverage__c"
+                                onchange={checkfieldGroupCoverage} value={valScopeofGroupCoverage}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                            all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Group_List_needs_to_be_provided__c"
+										value={valGroupListneedstobeprovided}
+										onchange={handleGroupListneedstobeprovided}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                            all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12 ">
+                            <lightning-input-field field-name="Excluded_Entities__c"
+										disabled={disableGroupRelatedFieldThree} value={valExcludedEntities}
+										onchange={handleExcludedEntities}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12 ">
+                            <lightning-input-field field-name="Permitted_Entities__c"
+										disabled={disableGroupRelatedFieldFour} value={valPermittedEntities}
+										onchange={handlePermittedEntities}>
+									</lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12 ">
+                            <lightning-input-field field-name="Details_of_Other_Scope_of_Group_Coverage__c"
+										disabled={disableGroupRelatedFieldFive}
+										value={valDetailsofOtherScopeofGroupCoverage}
+										onchange={handleDetailsofOtherScopeofGroupCoverage}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Updates_to_Group_List_Required__c"
+										onchange={handleUpdatestoGroupListRequired}
+										value={valUpdatestoGroupListRequired} disabled={disableGroupListneedsprovided}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                            all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Frequency_of_Updates__c"
+										value={valFrequencyofUpdate} onchange={handleFrequencyofUpdate}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                            all dependencies</button>
+
+                        </div>
+							
+
+
+
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_accepts_the_use_of_third_partie__c"
+										onchange={checkfieldThirdParty}
+										value={valSupplieracceptstheuseofthirdpartie}></lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfsad2"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12 ">
+									<lightning-input-field field-name="Group_list_changes_require_approval__c"
+										value={valGrouplistchangesrequireapproval}
+										onchange={handleGrouplistchangesrequireapproval}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+
+                        </div>
+
+								<div class="slds-col slds-size_6-of-12 ">
+									<lightning-input-field field-name="Approval_of_Service_Facilitators__c"
+										onchange={handleApprovalofServiceFacilitators}
+										value={valApprovalofServiceFacilitators}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfsad2"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                            all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Service_Facilitator_Definition__c"
+										disabled={disableGroupRelatedFieldSix} value={valServiceFacilitatorDefinition}
+										onchange={handleServiceFacilitatorDefinition}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfsad2"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+
+								<div class="slds-section slds-is-open slds-col slds-size_12-of-12"
+									style="padding-top:6px">
+                            <h3 class="slds-section__title slds-theme_shade">
+										<span class="slds-truncate slds-p-horizontal_small"
+											title="License Terms">License
+                                    Terms</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Content_to_Vendor_on_Exclusive_Basis__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Data_Purge_Required_upon_Termination__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Free_distribution_in_subscriber_group__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Preferred_vendor_supplier_terms_exist__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Restrictions_for_subscriber_charges__c"
+                                onchange={checkfieldSubscriber} value={valRestrictionsforsubscribercharges}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button" data-value="gfd2"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Details_of_Supplier_Conditions_Text__c"
+										value={valDetailsofSupplierConditionsText}
+										disabled={disableGroupRelatedFieldSeven}
+										onchange={handleDetailsofSupplierConditionsText}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="gfd2"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Novation_clauses_exist__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Anti_competitive_data_use_agreement__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Suppliers_definition_of_pro_nonpro_users__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_specific_definitions_exist__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Contractual_Price_Increase__c"
+										onchange={checkfieldContract} value={valContractualPriceIncrease}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd3">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Contractual_Price_Increase_Details__c"
+										value={valContractualPriceIncreaseDetails}
+										disabled={disableGroupRelatedFieldEight}
+										onchange={hanldleContractualPriceIncreaseDetails}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd3">View
+										all dependencies</button>
+                        </div>
+								<div class="slds-section slds-is-open slds-col slds-size_12-of-12"
+									style="padding-top:6px">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Subscriber Agreement">Subscriber Agreement</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Subscriber_Agreement_Required__c"
+                                onchange={checkfieldAgreement} value={valSubscriberAgreementRequired}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="subcriberd1">View
+                                all dependencies</button>
+
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Subscriber_Agreement_Definition__c"
+										disabled={disableGroupRelatedFieldTen} value={valSubscriberAgreementDefinition}
+										onchange={handleSubscriberAgreementDefinition}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="subcriberd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Contract_required_subscriber_agreement__c"
+										disabled={disableGroupRelatedFieldTen}
+										value={valContractrequiredsubscriberagreement}
+										onchange={handleContractrequiredsubscriberagreement}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										data-value="subcriberd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+
+								<div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Additional_terms_beyond_Vendors_standard__c"
+										disabled={disableGroupRelatedFieldTen}
+										value={valAdditionaltermsbeyondVendorsstandard}
+										onchange={handleAdditionaltermsbeyondVendorsstandard}>
+									</lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="subcriberd1">View
+										all dependencies</button>
+								</div>
+
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Subscriber_agreement_updates_required__c"
+										value={valSubscriberagreementupdatesrequired}
+										onchange={handleSubscriberagreementupdatesrequired}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										data-value="subcriberd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+
+							
+
+								<div class="slds-section slds-is-open slds-col slds-size_12-of-12"
+									style="padding-top:6px">
+                            <h3 class="slds-section__title slds-theme_shade">
+										<span class="slds-truncate slds-p-horizontal_small"
+											title="Website Usage">Website
+                                    Usage</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Website_Usage_rights__c"
+										onchange={checkfieldWebsite} value={valWebsiteUsagerights}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd19">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Exceptions_to_website_use__c"
+										disabled={disableGroupRelatedFieldnine} value={valExceptionstowebsiteuse}
+										onchange={handleExceptionstowebsiteuse}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd19">View
+										all dependencies</button>
+                        </div>
+                    </div>
+
+                    <div class="slds-grid slds-wrap" >
+                        <div class="slds-section slds-is-open slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small" title="Term & Renewal">Term &
+                                    Renewal</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Term_type__c" value={valTermtype}
+										onchange={handleTermtype}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="renewald1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Details__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Initial_Term_Length__c" value={valTermLength}
+										onchange={checkfieldTermLength}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd16">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Renewal_Start_Date__c" 
+									value={valRenewalStartDate} 
+									onchange={handleRenewalStartDate}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="renewald1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Initial_Term_Length_Other__c"
+										disabled={disableRenewalFieldOne} value={valInitialTermLengthOther}
+										onchange={handleInitialTermLengthOther}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd16">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Renewal_End_Date__c" value={valRenewalEndDate}
+									onchange={handleRenewalEndDate}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+									aria-label="View all dependencies for External Dependency" onclick={openModal}
+									data-value="renewald1">View
+									all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Term_Length__c" value={misTeamLengthVal}
+                                onchange={checkfieldRenewalTermLength}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="renewald1">View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Renewal_Term_Length_Other__c"
+										disabled={disableRenewalFieldTwo} onchange={handleRenewalTermLengthOther}
+										value={valRenewalTermLengthOther}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="renewald1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-section slds-is-open slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Termination">Termination</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_Termination_Process__c"
+										onchange={checkfieldTerminationProcess} value={valSupplierTerminationProcess}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd7"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Termination_Initiated_by__c" onchange={handleTerminationInitiatedby} value={valTerminationInitiatedby}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd23"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Custom_Termination_Process_If_Other__c"
+										disabled={disableRenewalFieldThree} value={valCustomTerminationProcessIfOther}
+										onchange={handlevalCustomTerminationProcessIfOther}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd7"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Termination_Effective_Date__c" 
+									value={valTerminationEffectiveDate} onchange={handleTerminationEffectiveDate} disabled={disableTerminationInitiated}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd23"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Reasons_for_Termination__c" value={valReasonsforTermination} onchange={handleReasonsforTermination} disabled={disableTerminationInitiated}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd23"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                    </div>
+
+
+                    <div class="slds-grid slds-wrap" >
+                        <div class="slds-section slds-is-open slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small" title="Supplier Terms">Supplier
+                                    Terms</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_data_quality_warranties_exist__c"
+										onchange={checkfieldQualityExist} value={valSupplierdataqualitywarrantiesexist}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd20"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Details_of_Supplier_Data_Quality_Warrant__c"
+										disabled={disableLegalFieldOne} value={valDetailsofSupplierDataQualityWarrant}
+										onchange={handleDetailsofSupplierDataQualityWarrant}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd20"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Level_playing_field_warranties_exist__c"
+										onchange={checkfieldPlayingFieldExist}
+										value={valLevelplayingfieldwarrantiesexist}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd21"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Details_of_level_playing_field_policy__c"
+										disabled={disableLegalFieldTwo}
+										onchange={handleDetailsoflevelplayingfieldpolicy}
+										value={valDetailsoflevelplayingfieldpolicy}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd21"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_warranties_comply_with_GDPR__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_warranties_comply_with_applicab__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Indemnity_for_3rd_party_IPR_infringement__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="IPR_warranties_exist__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Indemnity_for_claims_from_information__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="IPR_liability_breach_detail__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Direct_loss_is_excluded_for_Supplier__c"
+										value={valDirectlossisexcludedforSupplier}
+										onchange={handleDirectlossisexcludedforSupplier}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button" data-value="legald1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+
+                        </div>
+								<!-- <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Indirect_loss_is_excluded_for_Supplier__c">
+                            </lightning-input-field>
+								</div> -->
+
+								<div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Direct_loss_is_capped_for_Supplier__c"
+										onchange={checkfieldCappedSupplier} value={valDirectlossiscappedforSupplier}>
+									</lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="legald1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Include_liability_cap_supplier_currency__c"
+										disabled={disableLegalFieldThree} value={valIncludeliabilitycapsuppliercurrency}
+										onchange={handleIncludeliabilitycapsuppliercurrency}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="legald1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+								
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Include_liability_cap_for_supplier__c"
+										disabled={disableLegalFieldThree} value={valIncludeliabilitycapforsupplier}
+										onchange={handleIncludeliabilitycapforsupplier}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="legald1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_Liability_Cap_Variable__c"
+										disabled={disableLegalFieldThree} value={valSupplierLiabilityCapVariable}
+										onchange={handleSupplierLiabilityCapVariable}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="legald1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+								<div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Indirect_loss_is_excluded_for_Supplier__c">
+									</lightning-input-field>
+								</div>
+								
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Contract_silent_on_suppliers_liabilities__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_ethical_code_Status__c"
+										onchange={checkfieldCodeStatus} value={valSupplierethicalcodeStatus}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd17">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Additional_Supplier_Warranties__c"
+										onchange={checkfieldSupplierWarranties} value={valAdditionalSupplierWarranties}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd5"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_s_supply_chain_ethical_code__c"
+										disabled={disableLegalFieldFour} value={valSupplierssupplychainethicalcode}
+										onchange={handleSupplierssupplychainethicalcode}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd17">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Details_of_Additional_Supplier_Warrantie__c"
+										disabled={disableLegalFieldFive} value={valDetailsofAdditionalWarranties}
+										onchange={handleDetailsofAdditionalWarranties}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd5"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+
+                        <div class="slds-section slds-is-open slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small" title="Vendor Terms">Vendor
+                                    Terms</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Indirect_loss_is_excluded_for_Refinitiv__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Direct_loss_is_excluded_for_Refinitiv__c" value={valDirectlossiscappedforRefinitiv}
+									onchange={handleDirectlossiscappedforRefinitiv}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd22">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Direct_loss_is_capped_for_Refinitiv__c" value={valDirectlossisexcludedforRefinitiv}
+									onchange={handleDirectlossisexcludedforRefinitiv} disabled={disableDirectlossexcludedforRefinitiv}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd22">View
+										all dependencies</button>
+                        </div>
+							
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Vendors_liabilities_uncapped__c"
+										onchange={checkfieldLiabilitiesUncapped} value={valVendorsliabilitiesuncapped}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd18">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Include_liability_cap_vendor_currency__c"
+										disabled={disableLegalFieldSix} value={valIncludeliabilitycapvendorcurrency}
+										onchange={handleIncludeliabilitycapvendorcurrency}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd18">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Vendor_Liability_Cap_Variable__c"
+										disabled={disableLegalFieldSix} value={valVendorLiabilityCapVariable}
+										onchange={handleVendorLiabilityCapVariable}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd18">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Include_liability_cap_for_vendor__c"
+										disabled={disableLegalFieldSix} onchange={handleIncludeliabilitycapforvendor}
+										value={valIncludeliabilitycapforvendor}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd18">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Contract_silent_on_vendors_liabilities__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-section slds-is-open slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Assignment">Assignment</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Automatic_successor_assignment_exists__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="When_can_vendor_assign_the_contract__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Right_to_terminate_in_case_of_assignment__c"
+										onchange={checkfieldCaseAssignment}
+										value={valRighttoterminateincaseofassignment}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd6"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Change_control_termination_rights_detail__c"
+										disabled={disableLegalFieldSeven}
+										value={valChangecontrolterminationrightsdetail}
+										onchange={handleChangecontrolterminationrightsdetail}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button" data-value="mfd6"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+
+                        <div class="slds-section slds-is-open slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+										<span class="slds-truncate slds-p-horizontal_small"
+											title="Other Legal Terms">Other
+                                    Legal Terms</span>
+                            </h3>
+                        </div>
+                       
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Liability_and_indemnity_clarification__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Death_in_service_liability_UK__c"
+										value={valDeathinserviceliabilityUK} onchange={handleDeathinserviceliabilityUK}
+										disabled={disableLawofAgreementCountry}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										data-value="agreementD1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Non_standard_confidentiality_clause__c">
+                            </lightning-input-field>
+                        </div>
+
+							
+
+                    </div>
+               
+                    <div class="slds-grid slds-wrap" >
+                        <div class="slds-section slds-is-open slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Supplier Obligations">Supplier Obligations</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Support_provision_outlined_by_supplier__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Notice_minor_technical_changes__c"
+										onchange={handleNoticePeriodMinorTechnicalChanges}
+										value={valNoticeminortechnicalchanges}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd10">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Notice_minor_data_content_changes__c"
+										onchange={handleNoticeminordatacontentchanges}
+										value={valNoticeminordatacontentchanges}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd13">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Notice_Other_Minor_Technical_Changes__c"
+										disabled={disableNoticePeriodMinorTechnicalChanges}
+										value={valNoticeOtherMinorTechnicalChanges}
+										onchange={handleNoticeOtherMinorTechnicalChanges}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd10">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Notice_Other_Minor_Data_Changes__c"
+										disabled={disableNoticeminordatacontentchanges}
+										value={valNoticeOtherMinorDataChanges}
+										onchange={handleNoticeOtherMinorDataChanges}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd13">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Notice_major_technical_changes__c"
+										onchange={hanldeNoticemajortechnicalchanges}
+										value={valNoticemajortechnicalchanges}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd11">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Notice_major_data_content_changes__c"
+										onchange={handleNoticemajordatacontentchanges}
+										value={valNoticemajordatacontentchanges}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd12">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Notice_Other_Major_Technical_Changes__c"
+										disabled={disableNoticePeriodMajorTechnicalChanges}
+										value={valNoticeOtherMajorTechnicalChanges}
+										onchange={handleNoticeOtherMajorTechnicalChanges}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd11">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Notice_Other_Major_Data_Changes__c"
+										disabled={disableNoticePeriodMajorDataChanges}
+										value={valNoticeOtherMajorDataChanges}
+										onchange={handleNoticeOtherMajorDataChanges}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd12">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Service_Level_Terms__c"
+										onchange={checkfieldLevelTerm} value={valServiceLevelTerms}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd4">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Details_of_Service_Level_Terms__c"
+										disabled={disableDataSupportOne} value={valDetailsofServiceLevelTerms}
+										onchange={handleDetailsofServiceLevelTerms}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd4">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-section slds-is-open slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Vendor Obligations">Vendor Obligations</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Vendor_to_provide_technical_documents__c"
+                                onchange={checkfieldTechnical} value={valVendortoprovidetechnicaldocuments}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="dsd1">View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Overview_of_required_documentation__c"
+										disabled={disableDataSupportTwo} value={valOverviewofrequireddocumentation}
+										onchange={handleOverviewofrequireddocumentation}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="dsd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Vendor_to_provide_document_updates__c"
+										value={valVendortoprovidedocumentupdates}
+										onchange={handleVendortoprovidedocumentupdates}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="dsd1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Free_product_access__c"
+										onchange={checkfieldAccess} value={valFreeproductaccess}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd14">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Brief_Summary__c" value={valBriefSummary}
+										onchange={handleBriefSummary} disabled={disableDataSupportThree}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd14">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-section slds-is-open slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Service Level Agreement">Service Level Agreement</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Does_a_separate_SLA_document_exist__c"
+										onchange={checkfieldDocumentExist} value={valDoesaseparateSLAdocumentexist}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_Contract_Reference__c"
+										disabled={disableDataSupportFour} value={valSupplierContractReference}
+										onchange={handleSupplierContractReference}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd1">View
+										all dependencies</button>
+                        </div>
+
+                    </div>
+                <!-- </lightning-tab> -->
+                <!-- <lightning-tab label="Audit & Report" value="6" onactive={handleActive}> -->
+
+                    <div class="slds-grid slds-wrap" >
+                        <div class="slds-section slds-is-open slds-col slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Financial & Reporting">Financial & Reporting</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Reporting_Requirements__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Fee_change_frequency__c"
+										onchange={checkfeechangefrequency} value={valFeechangefrequency}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd9">View
+										all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Notice_for_changes_to_royalty_fees__c"
+										onchange={checknoticeRoyalty} value={valNoticeforchangestoroyaltyfees}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd8">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Frequency_Other_of_Fee_Changes__c"
+										disabled={disableReportingFieldOne} value={valFrequencyOtherofFeeChanges}
+										onchange={handleFrequencyOtherofFeeChanges}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd9">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Notice_Other_Royalty_Fee_Changes__c"
+										disabled={disableReportingFieldTwo}
+										onchange={handleNoticeOtherRoyaltyFeeChanges}
+										value={valNoticeOtherRoyaltyFeeChanges}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd8">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Vendor_liable_for_bank_transfer_charges__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Limit_for_Report_Corrections__c"
+										onchange={checkLimitReportCorr} value={valLimitforReportCorrections}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd2">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Details_of_Corrected_Reporting__c"
+										disabled={disableReportingFieldThree}
+										onchange={handleDetailsofCorrectedReporting}
+										value={valDetailsofCorrectedReporting}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="mfd2">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-section slds-is-open slds-col slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small" title="Audit">Audit</span>
+                            </h3>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Right_to_Audit_Vendor__c"
+										value={valRighttoAuditVendor} onchange={handleRighttoAuditVendor}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button" data-value="auditd1"
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Right_to_Audit_Vendor_s_Clients__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Audit_Guidelines__c" value={valAuditGuidelines}
+										onchange={handleAuditGuidelines} disabled={disableRighttoAuditVendor}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field value={valAuditFrequency} field-name="Audit_Frequency__c"
+										onchange={handleAuditFrequency}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Maximum_Audit_Period__c"
+										onchange={handleMaximumAuditPeriod} value={valMaximumAuditPeriod}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<!-- disabled={disableAuditFrequency} -->
+									<lightning-input-field field-name="Other_Audit_Frequency__c"
+										onchange={handleOtherAuditFrequency} value={valOtherAuditFrequency} disabled={disableRighttoAuditVendor}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Maximum_Audit_Period_Other__c"
+										disabled={disableMaximumAuditPeriod} value={valMaximumAuditPeriodOther}
+										onchange={handleMaximumAuditPeriodOther}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Notice_Period__c" onchange={handleNoticePeriod}
+										value={valNoticePeriod}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Record_Retention_Period__c"
+										onchange={handleRetentionOtherVal} value={valRecordRetentionPeriod}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Notice_Other_Audit__c"
+										disabled={disableNoticePeriod} value={valNoticeOtherAudit}
+										onchange={handleNoticeOtherAudit}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Audit_Record_Retention_Period_Other__c"
+										value={valAuditRecordRetentionPeriodOther}
+										onchange={handleAuditRecordRetentionPeriodOther}
+										disabled={disableRecordRetentionPeriod}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Immediate_under_Material_Breach__c"
+										onchange={handleImmediateunderMaterialBreach}
+										value={valImmediateunderMaterialBreach}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Record_Retention_Period_Post_Termination__c"
+										value={valRecordRetentionPeriodPostTermination}
+										onchange={handleRetentionPeriodPostTermination}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Party_responsible_for_coverage_of_Audit__c"
+										onchange={handlePartyresponsibleforcoverageofAudit}
+										value={valPartyresponsibleforcoverageofAudit}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Record_Period_Other_Post_Termination__c"
+										disabled={disableRecordRetentionPeriodPostTermination}
+										value={valRecordPeriodOtherPostTermination}
+										onchange={handleRecordPeriodOtherPostTermination}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Situations_where_liable_for_audit_costs__c"
+										onchange={handleLiabilityforAuditCosts} value={valLiabilityforAuditCosts}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Usage_Declaration_Certification__c">
+                            </lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Liability_of_Interest__c"
+										value={valLiabilityofInterest} onchange={handleLiabilityofInterest}>
+                            </lightning-input-field>
+                            <button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+                                all dependencies</button>
+
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Situations_where_audit_coverage_differs__c" onchange={hanldeSituationswhereAuditCoveragediffers} value={valSituationswhereAuditCoveragediffers} disabled={disableRighttoAuditVendor}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Other_Circumstances__c" disabled={disabledOtherCircumstances} onchange={handleOtherCircumstances} value={valOtherCircumstances} >
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Basis_for_Interest_calculation__c" onchange={handleBasisforInterestcalculation} value={valBasisforInterestcalculation} disabled={disabledBasisforInterestcalculation}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										aria-label="View all dependencies for External Dependency" onclick={openModal}
+										data-value="auditd1">View
+										all dependencies</button>
+                        </div>
+
+                    </div>
+                <!-- </lightning-tab> -->
+                <!-- <lightning-tab label="Regulation" value="7" onactive={handleActive}> -->
+
+                	<div class="slds-grid slds-wrap" >
+                        <div class="slds-section slds-is-open slds-col slds-size_12-of-12">
+                            <h3 class="slds-section__title slds-theme_shade">
+                                <span class="slds-truncate slds-p-horizontal_small"
+                                    title="Regulation">Regulation</span>
+                            </h3>
+                        </div>
+								<!-- <template lwc:if={hideField}>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Regulatory_Requirements__c"
+								value={valRegulatoryRequirements} onchange={handleRegulatoryRequirements}>
+                                </lightning-input-field>
+								</div>
+                            </template> -->
+									
+								<div class="slds-col slds-size_6-of-12">
+
+									<lightning-input-field field-name="Vendor_Activity_Description__c"
+										disabled={disableRegulatoryRequirements} value={valVendorActivityDescription}
+										onchange={handleVendorActivityDescription}>
+                                </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										data-value='regulatory'
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Regulatory_History__c"
+										value={valRegulatoryHistory} onchange={handleRegulatoryHistory}
+										disabled={disableRegulatoryRequirements}>
+                            </lightning-input-field>
+									<button class="slds-button" data-value='regulatory' aria-disabled="false"
+										type="button" aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="External_Dependency__c"
+										disabled={disableRegulatoryRequirements} onchange={handleExternalDependency}
+                                value={valExternalDependency}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										data-value='regulatory'
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_Dependency__c"
+										value={valSupplierDependency} onchange={handleSupplierDependency}
+										disabled={disableRegulatoryRequirements}>
+                            </lightning-input-field>
+									<button class="slds-button" data-value='regulatory' aria-disabled="false"
+										type="button" aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Outsourcing__c" onchange={handleOutsourcing}
+										value={valOutsourcing} disabled={disableRegulatoryRequirements}>
+                            </lightning-input-field>
+									<button class="slds-button" data-value='regulatory' aria-disabled="false"
+										type="button" aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Legal_Oversight__c" value={valLegalOversight}
+										onchange={handleLegalOversight} disabled={disableRegulatoryRequirements}>
+                            </lightning-input-field>
+									<button class="slds-button" data-value='regulatory' aria-disabled="false"
+										type="button" aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Verification_of_Outsourcing__c"
+										value={valVerificationofOutsourcing} onchange={handleVerificationofOutsourcing}
+										disabled={disableRegulatoryRequirements}>
+                            </lightning-input-field>
+									<button class="slds-button" data-value='regulatory' aria-disabled="false"
+										type="button" aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Due_Diligence_Checks__c"
+										disabled={disableRegulatoryRequirements} value={valDueDiligenceChecks}
+										onchange={handleDueDiligenceChecks}>
+                                </lightning-input-field>
+									<button class="slds-button" data-value='regulatory' aria-disabled="false"
+										type="button" aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+										all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Data_Quality_Verification__c"
+										disabled={disableRegulatoryRequirements} value={valDataQualityVerification}
+										onchange={handleDataQualityVerification}>
+                                </lightning-input-field>
+									<button class="slds-button" data-value='regulatory' aria-disabled="false"
+										type="button" aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                    all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Supplier_Co_operation__c"
+										value={valSupplierCooperation} onchange={handleSupplierCooperation}
+										disabled={disableRegulatoryRequirements}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										data-value='regulatory'
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal}>View
+                                all dependencies</button>
+                        </div>
+                        <div class="slds-col slds-size_6-of-12">
+                            <lightning-input-field field-name="Termination_of_Outsourcing__c"
+										value={valTerminationofOutsourcing} onchange={handleTerminationofOutsourcing}
+										disabled={disableRegulatoryRequirements}>
+                            </lightning-input-field>
+									<button class="slds-button" aria-disabled="false" type="button"
+										data-value='regulatory'
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal} >View
+										all dependencies </button>
+                        </div>
+                    
+
+                            <div class="slds-col slds-size_6-of-12">
+									<lightning-input-field field-name="Details_regulation__c"
+										value={valDetailsregulationcval} disabled={disableRegulatoryRequirements}
+								onchange={handleDetailsregulationcval}>
+                                </lightning-input-field>
+								<button class="slds-button" aria-disabled="false" type="button"
+										data-value='regulatory'
+										aria-label="View all dependencies for External Dependency"
+										onclick={openModal} >View
+										all dependencies </button>
+                            </div>
+                    </div>
+                <!-- </lightning-tab> -->
+            </div>
+            <!-- <p slot="footer">Card Footer</p> -->
+            <!-- <div  slot="footer" class="slds-grid slds-wrap "> -->
+            <div class="slds-docked-form-footer">
+                <div class="slds-col slds-size_12-of-12" style="text-align:center">
+                    <lightning-button type="submit" name="submit" style="padding:8px" variant="brand" label="Save"
+                        onclick={onSaveClick}>
+                    </lightning-button>
+                    <lightning-button name="Cancel" label="Cancel" variant="Neutral" onclick={closeQuickAction}>
+                    </lightning-button>
+                </div>
+            </div>
+            <!-- </lightning-tabset> -->
+        </lightning-record-edit-form>
+        <!--Navigation Button on card footer-->
+
+        <!-- </lightning-card> -->
+
+    </div>
+
+</lightning-card>
+
+    	<!-- * POP-UP for dependecy Picklist it used based on the boolen condition and dataset Value -->
+	<div>
+		<template if:true={isModalRegulation}>
+			<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close" onclick={closeModal}>
+							<lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+								size="small"></lightning-icon>
+							<span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit Dependencies</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+						<!-- Remove handle -->
+						<lightning-record-edit-form record-id={recordId} object-api-name={objectApiName}
+							onsuccess={handleSuccess}>
+							<lightning-messages></lightning-messages>
+							<!-- *START CORE Dependencies-->
+							<!-- ?Core - Total Dependecies Field Count: 6 Dependent Field -->
+							<!-- ? Reuseable Count  -->
+							<!-- *1 CFD1 *Regulatory RE-USED : 2 times -->
+							<!-- END -->
+							<template lwc:if={RegulatoryDependenciesField}>
+								<lightning-input-field field-name="Regulatory_Requirements__c"
+									value={valRegulatoryRequirements} onchange={handleRegulatoryRequirements}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Vendor_Activity_Description__c"
+									disabled={disableRegulatoryRequirements} value={valVendorActivityDescription}
+									onchange={handleVendorActivityDescription}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Regulatory_History__c" value={valRegulatoryHistory}
+									onchange={handleRegulatoryHistory} disabled={disableRegulatoryRequirements}>
+								</lightning-input-field>
+								<lightning-input-field field-name="External_Dependency__c"
+									onchange={handleExternalDependency} disabled={disableRegulatoryRequirements}
+									value={valExternalDependency}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Supplier_Dependency__c"
+									onchange={handleSupplierDependency} value={valSupplierDependency}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Outsourcing__c" onchange={handleOutsourcing}
+									value={valOutsourcing}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Legal_Oversight__c" value={valLegalOversight}
+										onchange={handleLegalOversight} disabled={disableRegulatoryRequirements}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Verification_of_Outsourcing__c"
+									onchange={handleVerificationofOutsourcing} value={valVerificationofOutsourcing}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Due_Diligence_Checks__c"
+									disabled={disableRegulatoryRequirements} value={valDueDiligenceChecks}
+									onchange={handleDueDiligenceChecks}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Data_Quality_Verification__c"
+								disabled={disableRegulatoryRequirements} value={valDataQualityVerification}
+								onchange={handleDataQualityVerification}>
+							</lightning-input-field>
+						<lightning-input-field field-name="Supplier_Co_operation__c"
+							onchange={handleSupplierCooperation} value={valSupplierCooperation}>
+						</lightning-input-field>
+						
+						<lightning-input-field field-name="Termination_of_Outsourcing__c"
+							onchange={handleTerminationofOutsourcing} value={valTerminationofOutsourcing}>
+						</lightning-input-field>
+								<lightning-input-field field-name="Details_regulation__c"
+									value={valDetailsregulationcval} disabled={disableRegulatoryRequirements}
+									onchange={handleDetailsregulationcval}>
+								</lightning-input-field>
+							</template>
+
+							<!-- *2 CFD1 *Contract Type, *Form of Agreement RE-USED : 2 times -->
+							<template lwc:elseif={cfd1}>
+								<lightning-input-field field-name="Status__c" onchange={handleStatus} value={ValStatus}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Sub_Status__c" onchange={handleSubStatus}
+									value={ValSubStatus}>
+								</lightning-input-field>
+									<lightning-input-field field-name="Reason_For_Cancellation__c"
+										disabled={disableLegalFieldFourCancelled} value={valReasonForCancellation} onchange={handleReasonForCancellation}>
+								</lightning-input-field>
+							</template>
+
+							<template lwc:elseif={cfd2}>
+								<lightning-input-field field-name="Contract_Type__c" onchange={handleContractType}
+									value={valContractType}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Form_of_Agreement__c"
+									onchange={handleFormofAgreement} value={valFormofAgreement}>
+								</lightning-input-field>
+							</template>
+
+							<template lwc:elseif={cfd3}>
+								<lightning-input-field field-name="Last_Commitment_Date_Vendor__c" onchange={handleDateVendor}
+									value={ValDateVendor}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Reason_Last_Commitment_Vendor__c" disabled={disableLastComVendor}
+									onchange={handleLastComVendor} value={ValLastComVendor}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Reason_Last_Commitment_Vendor_Other__c" disabled={disableLastComVendorOther}
+									onchange={handleLastComVendorOther} value={ValLastComVendorOther}>
+								</lightning-input-field>
+							</template>
+
+							<template lwc:elseif={agreementTemplate}>
+								<lightning-input-field field-name="Law_of_Agreement_Country__c"
+									onchange={handleLawofAgreementCountryc} value={valLawofAgreementCountryc}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Death_in_service_liability_UK__c"
+									value={valDeathinserviceliabilityUK} onchange={handleDeathinserviceliabilityUK}
+									disabled={disableLawofAgreementCountry}>
+								</lightning-input-field>
+							</template>
+
+							
+							<!-- *END CORE Dependencies-->
+							<!-- *START Group & License Dependencies-->
+							<template lwc:elseif={gfd1}>
+								<lightning-input-field field-name="Group_License__c" onchange={checkfieldGroupLicense}
+									value={valGroupLicense}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Affiliates_Definition__c"
+									disabled={disableGroupRelatedFieldOne} value={valAffiliatesDefinition}
+									onchange={handleAffiliatesDefinition}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Group_Definition__c"
+									disabled={disableGroupRelatedFieldOne} value={valGroupDefinition}
+									onchange={handleGroupDefinition}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Explanation_of_why_not__c"
+									disabled={disableGroupRelatedFieldTwo} value={valExplanationofwhynot}
+									onchange={handleExplanationofwhynot}>
+								</lightning-input-field>
+
+								<lightning-input-field field-name="Group_List_needs_to_be_provided__c"
+									onchange={handleGroupListneedstobeprovided} value={valGroupListneedstobeprovided}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Updates_to_Group_List_Required__c"
+									onchange={handleUpdatestoGroupListRequired} value={valUpdatestoGroupListRequired} disabled={disableGroupListneedsprovided}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Frequency_of_Updates__c"
+									onchange={handleFrequencyofUpdate} value={valFrequencyofUpdate}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Group_list_changes_require_approval__c"
+									onchange={handleGrouplistchangesrequireapproval}
+									value={valGrouplistchangesrequireapproval}> </lightning-input-field>
+								<lightning-input-field field-name="Scope_of_Group_Coverage__c"
+									onchange={checkfieldGroupCoverage} value={valScopeofGroupCoverage}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Excluded_Entities__c"
+									disabled={disableGroupRelatedFieldThree} value={valExcludedEntities}
+									onchange={handleExcludedEntities}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Permitted_Entities__c"
+									disabled={disableGroupRelatedFieldFour} value={valPermittedEntities}
+									onchange={handlePermittedEntities}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Details_of_Other_Scope_of_Group_Coverage__c"
+									disabled={disableGroupRelatedFieldFive}
+									value={valDetailsofOtherScopeofGroupCoverage}
+									onchange={handleDetailsofOtherScopeofGroupCoverage}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={gfsad2}>
+								<lightning-input-field field-name="Supplier_accepts_the_use_of_third_partie__c"
+									onchange={checkfieldThirdParty} value={valSupplieracceptstheuseofthirdpartie}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Approval_of_Service_Facilitators__c"
+									onchange={handleApprovalofServiceFacilitators}
+									value={valApprovalofServiceFacilitators}> </lightning-input-field>
+								<lightning-input-field field-name="Service_Facilitator_Definition__c"
+									disabled={disableGroupRelatedFieldSix} value={valServiceFacilitatorDefinition}
+									onchange={handleServiceFacilitatorDefinition}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={SubscriberTemplate}>
+								<lightning-input-field field-name="Subscriber_Agreement_Required__c"
+									onchange={checkfieldAgreement} value={valSubscriberAgreementRequired}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Contract_required_subscriber_agreement__c"
+									disabled={disableGroupRelatedFieldTen}
+									value={valContractrequiredsubscriberagreement}
+									onchange={handleContractrequiredsubscriberagreement}>
+								</lightning-input-field>
+
+								<lightning-input-field field-name="Subscriber_agreement_updates_required__c"
+									onchange={handleSubscriberagreementupdatesrequired}
+									value={valSubscriberagreementupdatesrequired}> </lightning-input-field>
+								<lightning-input-field field-name="Subscriber_Agreement_Definition__c"
+									disabled={disableGroupRelatedFieldTen} value={valSubscriberAgreementDefinition}
+									onchange={handleSubscriberAgreementDefinition}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Additional_terms_beyond_Vendors_standard__c"
+									disabled={disableGroupRelatedFieldTen}
+									value={valAdditionaltermsbeyondVendorsstandard}
+									onchange={handleAdditionaltermsbeyondVendorsstandard}>
+								</lightning-input-field>
+							</template>
+
+							<!-- *END  Group & License Dependencies-->
+
+							<!-- *START Renewal & Termination Dependencies-->
+							<template lwc:elseif={renewalTepmplate}>
+								<lightning-input-field field-name="Term_type__c" onchange={handleTermtype}
+									value={valTermtype}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Term_Length__c"
+									onchange={checkfieldRenewalTermLength} value={misTeamLengthVal}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Renewal_Term_Length_Other__c"
+									disabled={disableRenewalFieldTwo} onchange={handleRenewalTermLengthOther}
+									value={valRenewalTermLengthOther}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Renewal_Start_Date__c" 
+									value={valRenewalStartDate} 
+									onchange={handleRenewalStartDate}>
+									</lightning-input-field>
+									<lightning-input-field field-name="Renewal_End_Date__c" value={valRenewalEndDate}
+									onchange={handleRenewalEndDate}>
+									</lightning-input-field>
+							</template>
+
+							<!-- *END Renewal & Termination Dependencies-->
+
+							<!-- *START Legal Dependencies-->
+							<template lwc:elseif={legalFieldTempalte}>
+								<lightning-input-field field-name="Direct_loss_is_excluded_for_Supplier__c"
+									onchange={handleDirectlossisexcludedforSupplier}
+									value={valDirectlossisexcludedforSupplier}> </lightning-input-field>
+								<lightning-input-field field-name="Direct_loss_is_capped_for_Supplier__c"
+									onchange={checkfieldCappedSupplier} value={valDirectlossiscappedforSupplier}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Include_liability_cap_supplier_currency__c"
+									disabled={disableLegalFieldThree} value={valIncludeliabilitycapsuppliercurrency}
+									onchange={handleIncludeliabilitycapsuppliercurrency}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Include_liability_cap_for_supplier__c"
+									disabled={disableLegalFieldThree} value={valIncludeliabilitycapforsupplier}
+									onchange={handleIncludeliabilitycapforsupplier}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Supplier_Liability_Cap_Variable__c"
+									disabled={disableLegalFieldThree} value={valSupplierLiabilityCapVariable}
+									onchange={handleSupplierLiabilityCapVariable}>
+								</lightning-input-field>
+							</template>
+							<!-- *END  Legal Dependencies-->
+
+							<!-- *START Data & Support Dependencies-->
+							<template lwc:elseif={dsd1}>
+								<lightning-input-field field-name="Vendor_to_provide_technical_documents__c"
+									onchange={checkfieldTechnical} value={valVendortoprovidetechnicaldocuments}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Overview_of_required_documentation__c"
+									disabled={disableDataSupportTwo} value={valOverviewofrequireddocumentation}
+									onchange={handleOverviewofrequireddocumentation}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Vendor_to_provide_document_updates__c"
+									onchange={handleVendortoprovidedocumentupdates}
+									value={valVendortoprovidedocumentupdates}> </lightning-input-field>
+							</template>
+
+							<!-- *END  Data & Support Dependencies-->
+
+							<!-- *START Audit & Report Dependencies-->
+							<template lwc:elseif={auditdTemplate}>
+								<lightning-input-field field-name="Right_to_Audit_Vendor__c"
+									onchange={handleRighttoAuditVendor} value={valRighttoAuditVendor}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Audit_Guidelines__c" value={valAuditGuidelines}
+									onchange={handleAuditGuidelines} disabled={disableRighttoAuditVendor}>
+								</lightning-input-field>
+
+								<lightning-input-field field-name="Audit_Frequency__c" value={valAuditFrequency}
+									onchange={handleAuditFrequency}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Other_Audit_Frequency__c"
+									onchange={handleOtherAuditFrequency} value={valOtherAuditFrequency} disabled={disableRighttoAuditVendor}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Immediate_under_Material_Breach__c"
+									onchange={handleImmediateunderMaterialBreach}
+									value={valImmediateunderMaterialBreach}> </lightning-input-field>
+
+								
+								<lightning-input-field field-name="Maximum_Audit_Period__c"
+									onchange={handleMaximumAuditPeriod} value={valMaximumAuditPeriod}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Maximum_Audit_Period_Other__c"
+									disabled={disableMaximumAuditPeriod} value={valMaximumAuditPeriodOther}
+									onchange={handleMaximumAuditPeriodOther}>
+								</lightning-input-field>
+
+								<lightning-input-field field-name="Notice_Period__c" onchange={handleNoticePeriod}
+									value={valNoticePeriod}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Notice_Other_Audit__c" disabled={disableNoticePeriod}
+									value={valNoticeOtherAudit} onchange={handleNoticeOtherAudit}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Party_responsible_for_coverage_of_Audit__c"
+									onchange={handlePartyresponsibleforcoverageofAudit}
+									value={valPartyresponsibleforcoverageofAudit}> </lightning-input-field>
+								<lightning-input-field field-name="Record_Retention_Period_Post_Termination__c"
+									onchange={handleRetentionPeriodPostTermination}
+									value={valRecordRetentionPeriodPostTermination}> </lightning-input-field>
+								<lightning-input-field field-name="Record_Period_Other_Post_Termination__c"
+									disabled={disableRecordRetentionPeriodPostTermination}
+									value={valRecordPeriodOtherPostTermination}
+									onchange={handleRecordPeriodOtherPostTermination}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Record_Retention_Period__c"
+									onchange={handleRetentionOtherVal} value={valRecordRetentionPeriod}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Audit_Record_Retention_Period_Other__c"
+									value={valAuditRecordRetentionPeriodOther}
+									onchange={handleAuditRecordRetentionPeriodOther}
+									disabled={disableRecordRetentionPeriod}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Situations_where_liable_for_audit_costs__c"
+									onchange={handleLiabilityforAuditCosts} value={valLiabilityforAuditCosts}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Other_Circumstances__c" disabled={disabledOtherCircumstances} onchange={handleOtherCircumstances} value={valOtherCircumstances} >
+								</lightning-input-field>
+								<lightning-input-field field-name="Situations_where_audit_coverage_differs__c" onchange={hanldeSituationswhereAuditCoveragediffers} value={valSituationswhereAuditCoveragediffers} disabled={disableRighttoAuditVendor}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Liability_of_Interest__c"
+									onchange={handleLiabilityofInterest} value={valLiabilityofInterest}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Basis_for_Interest_calculation__c" onchange={handleBasisforInterestcalculation} value={valBasisforInterestcalculation} disabled={disabledBasisforInterestcalculation}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={gfd2}>
+								<lightning-input-field field-name="Restrictions_for_subscriber_charges__c"
+									onchange={checkfieldSubscriber} value={valRestrictionsforsubscribercharges}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Details_of_Supplier_Conditions_Text__c"
+									onchange={handleDetailsofSupplierConditionsText}
+									value={valDetailsofSupplierConditionsText} disabled={disableGroupRelatedFieldSeven}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd1}>
+								<lightning-input-field field-name="Does_a_separate_SLA_document_exist__c"
+									onchange={checkfieldDocumentExist} value={valDoesaseparateSLAdocumentexist}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Supplier_Contract_Reference__c"
+									onchange={handleSupplierContractReference} value={valSupplierContractReference}
+									disabled={disableDataSupportFour}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd2}>
+								<lightning-input-field field-name="Limit_for_Report_Corrections__c"
+									onchange={checkLimitReportCorr} value={valLimitforReportCorrections}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Details_of_Corrected_Reporting__c"
+									disabled={disableReportingFieldThree} onchange={handleDetailsofCorrectedReporting}
+									value={valDetailsofCorrectedReporting}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd3}>
+								<lightning-input-field field-name="Contractual_Price_Increase__c"
+									onchange={checkfieldContract} value={valContractualPriceIncrease}>
+								</lightning-input-field>
+
+								<lightning-input-field field-name="Contractual_Price_Increase_Details__c"
+									value={valContractualPriceIncreaseDetails} disabled={disableGroupRelatedFieldEight}
+									onchange={hanldleContractualPriceIncreaseDetails}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd4}>
+								<lightning-input-field field-name="Service_Level_Terms__c"
+									onchange={checkfieldLevelTerm} value={valServiceLevelTerms}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Details_of_Service_Level_Terms__c"
+									disabled={disableDataSupportOne} value={valDetailsofServiceLevelTerms}
+									onchange={handleDetailsofServiceLevelTerms}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd5}>
+								<lightning-input-field field-name="Additional_Supplier_Warranties__c"
+									onchange={checkfieldSupplierWarranties} value={valAdditionalSupplierWarranties}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Details_of_Additional_Supplier_Warrantie__c"
+									disabled={disableLegalFieldFive} value={valDetailsofAdditionalWarranties}
+									onchange={handleDetailsofAdditionalWarranties}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd6}>
+								<lightning-input-field field-name="Right_to_terminate_in_case_of_assignment__c"
+									onchange={checkfieldCaseAssignment} value={valRighttoterminateincaseofassignment}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Change_control_termination_rights_detail__c"
+									disabled={disableLegalFieldSeven} value={valChangecontrolterminationrightsdetail}
+									onchange={handleChangecontrolterminationrightsdetail}>
+								</lightning-input-field>
+
+							</template>
+							<template lwc:elseif={mfd7}>
+								<lightning-input-field field-name="Supplier_Termination_Process__c"
+									onchange={checkfieldTerminationProcess} value={valSupplierTerminationProcess}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Custom_Termination_Process_If_Other__c"
+									disabled={disableRenewalFieldThree} value={valCustomTerminationProcessIfOther}
+									onchange={handlevalCustomTerminationProcessIfOther}>
+								</lightning-input-field>
+
+							</template>
+							<template lwc:elseif={mfd8}>
+								<lightning-input-field field-name="Notice_for_changes_to_royalty_fees__c"
+									onchange={checknoticeRoyalty} value={valNoticeforchangestoroyaltyfees}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Notice_Other_Royalty_Fee_Changes__c"
+									disabled={disableReportingFieldTwo} onchange={handleNoticeOtherRoyaltyFeeChanges}
+									value={valNoticeOtherRoyaltyFeeChanges}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd9}>
+								<lightning-input-field field-name="Fee_change_frequency__c"
+									onchange={checkfeechangefrequency} value={valFeechangefrequency}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Frequency_Other_of_Fee_Changes__c"
+									disabled={disableReportingFieldOne} value={valFrequencyOtherofFeeChanges}
+									onchange={handleFrequencyOtherofFeeChanges}>
+								</lightning-input-field>
+
+							</template>
+							<template lwc:elseif={mfd10}>
+								<lightning-input-field field-name="Notice_minor_technical_changes__c"
+									onchange={handleNoticePeriodMinorTechnicalChanges}
+									value={valNoticeminortechnicalchanges}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Notice_Other_Minor_Technical_Changes__c"
+									disabled={disableNoticePeriodMinorTechnicalChanges}
+									value={valNoticeOtherMinorTechnicalChanges}
+									onchange={handleNoticeOtherMinorTechnicalChanges}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd11}>
+								<lightning-input-field field-name="Notice_major_technical_changes__c"
+									onchange={hanldeNoticemajortechnicalchanges} value={valNoticemajortechnicalchanges}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Notice_Other_Major_Technical_Changes__c"
+									disabled={disableNoticePeriodMajorTechnicalChanges}
+									value={valNoticeOtherMajorTechnicalChanges}
+									onchange={handleNoticeOtherMajorTechnicalChanges}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd12}>
+								<lightning-input-field field-name="Notice_major_data_content_changes__c"
+									onchange={handleNoticemajordatacontentchanges}
+									value={valNoticemajordatacontentchanges}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Notice_Other_Major_Data_Changes__c"
+									disabled={disableNoticePeriodMajorDataChanges}
+									value={valNoticeOtherMajorDataChanges} onchange={handleNoticeOtherMajorDataChanges}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd13}>
+								<lightning-input-field field-name="Notice_minor_data_content_changes__c"
+									onchange={handleNoticeminordatacontentchanges}
+									value={valNoticeminordatacontentchanges}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Notice_Other_Minor_Data_Changes__c"
+									disabled={disableNoticeminordatacontentchanges}
+									value={valNoticeOtherMinorDataChanges} onchange={handleNoticeOtherMinorDataChanges}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd14}>
+								<lightning-input-field field-name="Free_product_access__c" onchange={checkfieldAccess}
+									value={valFreeproductaccess}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Brief_Summary__c" value={valBriefSummary}
+									onchange={handleBriefSummary} disabled={disableDataSupportThree}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd15}>
+								<lightning-input-field field-name="Is_Handover__c" onchange={checkfieldName}
+									value={valHandoverContract}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Vendor_s_Handover_BU__c" disabled={disableInputField}
+									onchange={handleVendorsHandoverBU} value={valVendorsHandoverBU}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd16}>
+								<lightning-input-field field-name="Initial_Term_Length__c" value={valTermLength}
+									onchange={checkfieldTermLength}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Initial_Term_Length_Other__c"
+									disabled={disableRenewalFieldOne} value={valInitialTermLengthOther}
+									onchange={handleInitialTermLengthOther}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd17}>
+								<lightning-input-field field-name="Supplier_ethical_code_Status__c"
+									onchange={checkfieldCodeStatus} value={valSupplierethicalcodeStatus}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Supplier_s_supply_chain_ethical_code__c"
+									disabled={disableLegalFieldFour} value={valSupplierssupplychainethicalcode}
+									onchange={handleSupplierssupplychainethicalcode}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd18}>
+								<lightning-input-field field-name="Vendors_liabilities_uncapped__c"
+									onchange={checkfieldLiabilitiesUncapped} value={valVendorsliabilitiesuncapped}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Include_liability_cap_vendor_currency__c"
+									disabled={disableLegalFieldSix} value={valIncludeliabilitycapvendorcurrency}
+									onchange={handleIncludeliabilitycapvendorcurrency}>
+								</lightning-input-field>
+
+								<lightning-input-field field-name="Vendor_Liability_Cap_Variable__c"
+									disabled={disableLegalFieldSix} value={valVendorLiabilityCapVariable}
+									onchange={handleVendorLiabilityCapVariable}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Include_liability_cap_for_vendor__c"
+									disabled={disableLegalFieldSix} onchange={handleIncludeliabilitycapforvendor}
+									value={valIncludeliabilitycapforvendor}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd19}>
+								<lightning-input-field field-name="Website_Usage_rights__c" onchange={checkfieldWebsite}
+									value={valWebsiteUsagerights}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Exceptions_to_website_use__c"
+									disabled={disableGroupRelatedFieldnine} value={valExceptionstowebsiteuse}
+									onchange={handleExceptionstowebsiteuse}>
+								</lightning-input-field>
+							</template>
+							<!-- *END Audit & Report Dependencies-->
+
+							<template lwc:elseif={mfd20}>
+								<lightning-input-field field-name="Supplier_data_quality_warranties_exist__c"
+									onchange={checkfieldQualityExist} value={valSupplierdataqualitywarrantiesexist}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Details_of_Supplier_Data_Quality_Warrant__c"
+									disabled={disableLegalFieldOne} value={valDetailsofSupplierDataQualityWarrant}
+									onchange={handleDetailsofSupplierDataQualityWarrant}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd21}>
+								<lightning-input-field field-name="Level_playing_field_warranties_exist__c"
+									onchange={checkfieldPlayingFieldExist} value={valLevelplayingfieldwarrantiesexist}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Details_of_level_playing_field_policy__c"
+									disabled={disableLegalFieldTwo} onchange={handleDetailsoflevelplayingfieldpolicy}
+									value={valDetailsoflevelplayingfieldpolicy}>
+								</lightning-input-field>
+							</template>
+							<template lwc:elseif={mfd22}>
+								<lightning-input-field field-name="Direct_loss_is_excluded_for_Refinitiv__c" value={valDirectlossiscappedforRefinitiv}
+									onchange={handleDirectlossiscappedforRefinitiv}>
+									</lightning-input-field>
+								<lightning-input-field field-name="Direct_loss_is_capped_for_Refinitiv__c" value={valDirectlossisexcludedforRefinitiv}
+									onchange={handleDirectlossisexcludedforRefinitiv} disabled={disableDirectlossexcludedforRefinitiv}>
+									</lightning-input-field>
+								
+							</template>
+							<template lwc:elseif={mfd23}>
+								<lightning-input-field field-name="Termination_Initiated_by__c" onchange={handleTerminationInitiatedby} value={valTerminationInitiatedby}>
+								</lightning-input-field>
+								<lightning-input-field field-name="Termination_Effective_Date__c" 
+									value={valTerminationEffectiveDate} onchange={handleTerminationEffectiveDate} disabled={disableTerminationInitiated}>
+									</lightning-input-field>
+									<lightning-input-field field-name="Reasons_for_Termination__c" value={valReasonsforTermination} onchange={handleReasonsforTermination} disabled={disableTerminationInitiated}>
+									</lightning-input-field>
+							</template>
+
+						</lightning-record-edit-form>
+					</div>
+					<footer class="slds-modal__footer">
+						<button class="slds-button slds-button_neutral" onclick={closeModal}
+							title="Cancel">Cancel</button>
+						<button class="slds-button slds-button_brand" type="submit" name="submit" onclick={submitDetails}
+							title="Apply">Apply</button>
+					</footer>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</template>
+	</div>
+	<!-- * Regulation POP-UP for dependecy Picklist -->
+
+</template>
