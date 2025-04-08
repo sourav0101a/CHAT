@@ -1,53 +1,2768 @@
-import { api, LightningElement } from 'lwc';
-import newCase from '@salesforce/apex/SC_CommonLEX.newCase';
-import LightningAlert from 'lightning/alert';
-import { NavigationMixin } from 'lightning/navigation';
+// import { LightningElement } from 'lwc';
+import { LightningElement, api, wire,track } from 'lwc';
+import { getRecord } from 'lightning/uiRecordApi';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { CloseActionScreenEvent } from 'lightning/actions';
 
-export default class Scnewcase extends NavigationMixin(LightningElement) {
-    @api resType;
-    @api resMsg;
 
-    @api
-    newCaseContact(contactId) {
-        console.log('value of contactId: ' + contactId);
-        
-        newCase({ conId: contactId })
-            .then(result => {
-                let conts = result;
-                let indexVal = conts.indexOf(",");
-                this.resType = conts.slice(0, indexVal);
-                this.resMsg = conts.slice(indexVal + 1);
-                this.dispatchEvent(new CustomEvent("operationcompleted"));
-                    
-                if (this.resType === 'URL') {
-                    console.log('148778 new CustomEvent', this.resMsg);
-                    this.navigateToRecordPage(this.resMsg);
-                    // const valueChangeEvent = new CustomEvent("valuechange", {
-                    // detail: { resMsg }
-                    // });
-                    // Fire the custom event
-                    
-                    
-                    
-                
-                 }
-            })
-            .catch(error => {
-                console.log('Error: ' + error);
-            });
-    }
+export default class Rscm_ContractEditRecord extends LightningElement {
 
-    navigateToRecordPage(caseId) {
-        this[NavigationMixin.Navigate]({
-            type: 'standard__recordPage',
-            attributes: {
-                recordId: caseId,
-                objectApiName: 'Case',
-                actionName: 'view'
+
+// export default class ContractTab extends LightningElement {
+    // Js Properties start
+    @api recordId;
+    @api objectApiName = 'Supplier_Contract__c';
+    activeTab = '1';
+    @api isLoaded = false;
+  hideField = true;
+  hideFieldDisabled = true;
+  showEditField;
+    disableInputField;
+  disableGroupRelatedFieldOne;
+  disableGroupRelatedFieldTwo;
+  disableGroupRelatedFieldThree;
+  disableGroupRelatedFieldFour;
+  disableGroupRelatedFieldFive;
+  disableGroupRelatedFieldSix;
+  disableGroupRelatedFieldSeven;
+  disableGroupRelatedFieldEight;
+  disableGroupRelatedFieldnine;
+  disableGroupRelatedFieldTen;
+  disableRenewalFieldOne;
+  disableRenewalFieldTwo;
+  disableRenewalFieldThree;
+  disableLegalFieldOne;
+  disableLegalFieldTwo;
+  disableLegalFieldThree;
+  disableLegalFieldFour;
+  disableLegalFieldFive;
+  disableLegalFieldSix;
+  disableLegalFieldSeven;
+    disableDataSupportOne;
+  disableGroupListneedsprovided;
+    disableDataSupportTwo;
+    disableDataSupportThree;
+    disableDataSupportFour;
+  disableReportingFieldOne;
+  disableReportingFieldTwo;
+  disableReportingFieldThree;
+  disableRecordRetentionPeriod;
+  disableNoticePeriod;
+  disableAuditFrequency;
+  disableRecordRetentionPeriodPostTermination;
+    disableNoticeminordatacontentchanges;
+    disableNoticePeriodMinorTechnicalChanges;
+    disableNoticePeriodMajorTechnicalChanges;
+    disableNoticePeriodMajorDataChanges;
+  disableRighttoAuditVendor;
+  disabledBasisforInterestcalculation;
+  disableLawofAgreementCountry;
+  disableLegalFieldFourCancelled;
+  disableDirectlossexcludedforRefinitiv;
+  disableTerminationInitiated;
+  disabledOtherCircumstances;
+  disableLastComVendor;
+  disableLastComVendorOther;
+  isModalRegulation = false; //Boolean tracked variable to indicate if modal is open or not default value is false as modal is closed when page is loaded
+  valSubscriberAgreementDefinition;
+  valPermittedEntities;
+  valDetailsofOtherScopeofGroupCoverage;
+  valExcludedEntities;
+  valServiceFacilitatorDefinition;
+  valAuditGuidelines;
+  valAdditionaltermsbeyondVendorsstandard;
+  valRegulatoryRequirements;
+  valExternalDependency;
+  valLegalOversight;
+  valOutsourcing;
+  valRegulatoryHistory;
+  valSupplierCooperation;
+  valSupplierDependency;
+  valTerminationofOutsourcing;
+  valDetailsregulationcval;
+  valVerificationofOutsourcing;
+  valDueDiligenceChecks;
+  valDataQualityVerification;
+  valOtherAuditFrequency;
+  valNoticeminortechnicalchanges;
+  valInitialTermLengthOther;
+  valRenewalTermLengthOther;
+  valIncludeliabilitycapsuppliercurrency;
+  valIncludeliabilitycapforsupplier;
+  valSupplierLiabilityCapVariable;
+  valSupplierethicalcodeStatus;
+  valSupplierssupplychainethicalcode;
+  valVendorsliabilitiesuncapped;
+  valIncludeliabilitycapvendorcurrency;
+  valVendorLiabilityCapVariable;
+  valIncludeliabilitycapforvendor;
+  valDeathinserviceliabilityUK;
+  valExceptionstowebsiteuse;
+  valWebsiteUsagerights;
+  valAffiliatesDefinition;
+  valGroupDefinition;
+  valExplanationofwhynot;
+  valVendorActivityDescription;
+  valSupplierdataqualitywarrantiesexist;
+  valDetailsofSupplierDataQualityWarrant;
+  valDetailsoflevelplayingfieldpolicy;
+  valDirectlossiscappedforRefinitiv;
+  valDirectlossisexcludedforRefinitiv;
+  valRenewalStartDate;
+  valRenewalEndDate;
+  valSituationswhereAuditCoveragediffers;
+  valTerminationInitiatedby;
+  valTerminationEffectiveDate;
+  valReasonsforTermination;
+  valReasonForCancellation;
+  valOtherCircumstances;
+  valBasisforInterestcalculation;
+    // Start HERE 
+        // * Regulation POPUP MODEL Handler 
+  ValStatus;
+  ValSubStatus;
+  ValDateVendor;
+  ValLastComVendor;
+  ValLastComVendorOther;
+  valFormofAgreement;
+  valContractType;
+  valGroupLicense;
+  valGroupListneedstobeprovided;
+  valUpdatestoGroupListRequired;
+  valFrequencyofUpdate;
+  valGrouplistchangesrequireapproval;
+  valScopeofGroupCoverage;
+  valRestrictionsforsubscribercharges;
+  valRestrictionsforsubscribercharges;
+    
+  valRighttoAuditVendor;
+  valAuditFrequency;
+  valImmediateunderMaterialBreach;
+  valLiabilityofInterest;
+  valMaximumAuditPeriod;
+  valNoticePeriod;
+  valPartyresponsibleforcoverageofAudit;
+  valRecordRetentionPeriodPostTermination;
+  valRecordRetentionPeriod;
+  valLiabilityforAuditCosts;
+  valLawofAgreementCountryc;
+  valTermtype;
+  valTermLength;
+  valVendortoprovidetechnicaldocuments;
+  valVendortoprovidedocumentupdates;
+  valDirectlossisexcludedforSupplier;
+  valDirectlossiscappedforSupplier;
+  valSubscriberAgreementRequired;
+  valContractrequiredsubscriberagreement;
+  valSubscriberagreementupdatesrequired;
+  valDetailsofSupplierConditionsText;
+
+  valSupplieracceptstheuseofthirdpartie;
+  valApprovalofServiceFacilitators;
+  misTeamLengthVal;
+    
+  valDoesaseparateSLAdocumentexist;
+  valSupplierContractReference;
+  valLimitforReportCorrections = "";
+  valDetailsofCorrectedReporting = "";
+  valContractualPriceIncrease;
+  valContractualPriceIncreaseDetails;
+  valServiceLevelTerms;
+  valDetailsofServiceLevelTerms;
+  valAdditionalSupplierWarranties;
+  valDetailsofAdditionalWarranties;
+  valChangecontrolterminationrightsdetail;
+  valRighttoterminateincaseofassignment;
+  valCustomTerminationProcessIfOther;
+  valSupplierTerminationProcess;
+  valAuditRecordRetentionPeriodOther;
+  valNoticeOtherRoyaltyFeeChanges;
+  valNoticeforchangestoroyaltyfees;
+  valFeechangefrequency;
+  valFrequencyOtherofFeeChanges;
+  valNoticeOtherMinorTechnicalChanges;
+  valNoticemajortechnicalchanges;
+  valNoticeOtherMajorTechnicalChanges;
+  valNoticemajordatacontentchanges;
+  valNoticeOtherMajorDataChanges;
+  valNoticeminordatacontentchanges;
+  valNoticeOtherMinorDataChanges;
+  valFreeproductaccess;
+  valBriefSummary;
+  valOverviewofrequireddocumentation;
+  valMaximumAuditPeriodOther;
+  valNoticeOtherAudit;
+  valRecordPeriodOtherPostTermination;
+  valVendorsHandoverBU;
+  valHandoverContract;
+        RegulatoryDependenciesField = false;
+        gfd2 = false;
+        auditdTemplate = false;
+        agreementTemplate = false;
+        cfd1 = false;
+        cfd2 = false;
+        cfd3 = false;
+        gfd1 = false;
+        gfsad2 = false;
+        renewalTepmplate = false;
+        dsd1 = false;
+  legalFieldTempalte = false;
+  SubscriberTemplate = false;
+  disableMaximumAuditPeriod = false;
+  mfd1 = false;
+  mfd2 = false;
+  mfd3 = false;
+  mfd4 = false;
+
+  mfd5 = false;
+  mfd6 = false;
+  mfd7 = false;
+  mfd8 = false;
+  mfd9 = false;
+  mfd10 = false;
+  mfd11 = false;
+  mfd12 = false;
+  mfd13 = false;
+  mfd14 = false;
+  mfd15 = false;
+  mfd16 = false;
+  mfd17 = false;
+  mfd20 = false;
+  mfd21 = false;
+  mfd22 = false;
+  mfd23 = false;
+  disableRegulatoryRequirements;
+
+    // END model 
+    /** 
+    @api fieldList = ["Name", "Contract_Description__c",
+        "Status__c", "Contract_Type__c", "Sub_Status__c", "Used_Agreement_Template__c", "Effective_Date__c","Last_Commitment_Date_Vendor__c","Reason_Last_Commitment_Vendor_Other__c","Reason_Last_Commitment_Vendor__c",
+        "Law_of_Agreement_Jurisdiction__c", "Account__c", "Form_of_Agreement__c", "Is_Handover__c", "Law_of_Agreement_Country__c",
+        "DRG_Request__c", "Secondary_Owner__c", "Business_Area__c", "Vendor_s_Handover_BU__c", "Regulatory_Requirements__c", "Requestor_Name__c"]; //harcoded the values assuming objectApiName is Account for demo purpose
+    @api fieldListGroup = ["Group_License__c", "Affiliates_Definition__c", "Group_Definition__c", "Explanation_of_why_not__c", "Scope_of_Group_Coverage__c", "Group_List_needs_to_be_provided__c",
+        "Excluded_Entities__c", "Permitted_Entities__c", "Details_of_Other_Scope_of_Group_Coverage__c", "Frequency_of_Updates__c", "Updates_to_Group_List_Required__c", "Supplier_accepts_the_use_of_third_partie__c", "Group_list_changes_require_approval__c",
+        "Approval_of_Service_Facilitators__c", "Service_Facilitator_Definition__c"];
+    @api fieldListLicense = ["Content_to_Vendor_on_Exclusive_Basis__c", "Data_Purge_Required_upon_Termination__c", "Free_distribution_in_subscriber_group__c",
+        "Preferred_vendor_supplier_terms_exist__c", "Restrictions_for_subscriber_charges__c", "Details_of_Supplier_Conditions_Text__c", "Novation_clauses_exist__c", "Anti_competitive_data_use_agreement__c",
+        "Suppliers_definition_of_pro_nonpro_users__c", "Supplier_specific_definitions_exist__c", "Contractual_Price_Increase__c", "Contractual_Price_Increase_Details__c"];
+    @api fieldListSubscriber = ["Subscriber_Agreement_Required__c", "Subscriber_Agreement_Definition__c", "Contract_required_subscriber_agreement__c",
+        "Subscriber_agreement_updates_required__c", "Additional_terms_beyond_Vendors_standard__c"];
+    @api fieldListTerm = ["Term_type__c", "Details__c", "Initial_Term_Length__c", "Renewal_Start_Date__c", "Initial_Term_Length_Other__c",
+        "Renewal_End_Date__c", "Term_Length__c", "Renewal_Term_Length_Other__c"];
+    @api fieldListTermination = ["Supplier_Termination_Process__c", "Termination_Initiated_by__c", "Custom_Termination_Process_If_Other__c",
+        "Termination_Effective_Date__c", "Reasons_for_Termination__c"];
+    @api fieldListSupplier = ["Supplier_data_quality_warranties_exist__c", "Details_of_Supplier_Data_Quality_Warrant__c", "Details_of_level_playing_field_policy__c",
+        "Level_playing_field_warranties_exist__c", "Supplier_warranties_comply_with_GDPR__c", "Supplier_warranties_comply_with_applicab__c",
+        "Indemnity_for_3rd_party_IPR_infringement__c", "IPR_warranties_exist__c", "Indemnity_for_claims_from_information__c", "IPR_liability_breach_detail__c",
+        "Direct_loss_is_excluded_for_Supplier__c", "Indirect_loss_is_excluded_for_Supplier__c", "Include_liability_cap_supplier_currency__c",
+        "Direct_loss_is_capped_for_Supplier__c", "Include_liability_cap_for_supplier__c", "Supplier_Liability_Cap_Variable__c", "Contract_silent_on_suppliers_liabilities__c",
+        "Supplier_ethical_code_Status__c", "Additional_Supplier_Warranties__c", "Supplier_s_supply_chain_ethical_code__c", "Details_of_Additional_Supplier_Warrantie__c"];
+
+    @api fieldListVendor = ["Indirect_loss_is_excluded_for_Refinitiv__c", "Direct_loss_is_capped_for_Refinitiv__c", "Direct_loss_is_excluded_for_Refinitiv__c", "Vendors_liabilities_uncapped__c",
+        "Include_liability_cap_vendor_currency__c", "Vendor_Liability_Cap_Variable__c", "Include_liability_cap_for_vendor__c", "Contract_silent_on_vendors_liabilities__c"];
+
+    @api fieldListAssignment = ["Automatic_successor_assignment_exists__c", "When_can_vendor_assign_the_contract__c", "Right_to_terminate_in_case_of_assignment__c",
+        "Change_control_termination_rights_detail__c"];
+
+    @api fieldListOther = ["Liability_and_indemnity_clarification__c", "Death_in_service_liability_UK__c", "Non_standard_confidentiality_clause__c"];
+    @api fieldListSupplier1 = ["Support_provision_outlined_by_supplier__c", "Notice_minor_technical_changes__c", "Notice_minor_data_content_changes__c",
+        "Notice_Other_Minor_Technical_Changes__c", "Notice_Other_Minor_Data_Changes__c", "Notice_major_technical_changes__c", "Notice_major_data_content_changes__c",
+        "Notice_Other_Major_Technical_Changes__c", "Notice_Other_Major_Data_Changes__c", "Service_Level_Terms__c", "Details_of_Service_Level_Terms__c"];
+    @api fieldListVendor1 = ["Vendor_to_provide_technical_documents__c", "Overview_of_required_documentation__c", "Vendor_to_provide_document_updates__c",
+        "Free_product_access__c", "Brief_Summary__c"];
+    @api fieldListServiceLevel = ["Does_a_separate_SLA_document_exist__c", "Supplier_Contract_Reference__c"];
+    @api fieldListAudit = ["Reporting_Requirements__c", "Fee_change_frequency__c", "Notice_for_changes_to_royalty_fees__c",
+        "Frequency_Other_of_Fee_Changes__c", "Notice_Other_Royalty_Fee_Changes__c", "Vendor_liable_for_bank_transfer_charges__c",
+        "Limit_for_Report_Corrections__c", "Details_of_Corrected_Reporting__c"];
+    @api fieldAuditList = ["Right_to_Audit_Vendor__c", "Right_to_Audit_Vendor_s_Clients__c", "Audit_Guidelines__c", "Audit_Frequency__c",
+        "Maximum_Audit_Period__c", "Other_Audit_Frequency__c", "Maximum_Audit_Period_Other__c", "Notice_Period__c", "Record_Retention_Period__c",
+        "Notice_Other_Audit__c", "Audit_Record_Retention_Period_Other__c", "Immediate_under_Material_Breach__c", "Record_Retention_Period_Post_Termination__c",
+        "Party_responsible_for_coverage_of_Audit__c", "Record_Period_Other_Post_Termination__c", "Situations_where_liable_for_audit_costs__c",
+        "Usage_Declaration_Certification__c", "Liability_of_Interest__c", "Situations_where_audit_coverage_differs__c", "Other_Circumstances__c",
+        "Basis_for_Interest_calculation__c"];
+    // The below fields create for Regulation Date : 10 Feb,2023 
+    @api fieldRegulation = ["Vendor_Activity_Description__c", "Regulatory_History__c", "External_Dependency__c", "Supplier_Dependency__c", "Outsourcing__c", "Legal_Oversight__c", "Verification_of_Outsourcing__c", "Due_Diligence_Checks__c", "Data_Quality_Verification__c", "Supplier_Co_operation__c", "Termination_of_Outsourcing__c", "Details_regulation__c"];
+*/
+    // showEditField;
+    @wire(getRecord, {
+    recordId: "$recordId",
+    fields: [
+      "Supplier_Contract__c.Is_Handover__c",
+      "Supplier_Contract__c.Group_License__c",
+      "Supplier_Contract__c.Scope_of_Group_Coverage__c",
+      "Supplier_Contract__c.Supplier_accepts_the_use_of_third_partie__c",
+      "Supplier_Contract__c.Contractual_Price_Increase__c",
+      "Supplier_Contract__c.Website_Usage_rights__c",
+      "Supplier_Contract__c.Exceptions_to_website_use__c",
+      "Supplier_Contract__c.Subscriber_Agreement_Required__c",
+      "Supplier_Contract__c.Restrictions_for_subscriber_charges__c",
+      "Supplier_Contract__c.Initial_Term_Length__c",
+      "Supplier_Contract__c.Term_Length__c",
+      "Supplier_Contract__c.Supplier_Termination_Process__c",
+      "Supplier_Contract__c.Supplier_data_quality_warranties_exist__c",
+      "Supplier_Contract__c.Level_playing_field_warranties_exist__c",
+      "Supplier_Contract__c.Direct_loss_is_capped_for_Supplier__c",
+      "Supplier_Contract__c.Supplier_ethical_code_Status__c",
+      "Supplier_Contract__c.Additional_Supplier_Warranties__c",
+      "Supplier_Contract__c.Vendors_liabilities_uncapped__c",
+      "Supplier_Contract__c.Right_to_terminate_in_case_of_assignment__c",
+      "Supplier_Contract__c.Service_Level_Terms__c",
+      "Supplier_Contract__c.Vendor_to_provide_technical_documents__c",
+      "Supplier_Contract__c.Free_product_access__c",
+      "Supplier_Contract__c.Does_a_separate_SLA_document_exist__c",
+      "Supplier_Contract__c.Fee_change_frequency__c",
+      "Supplier_Contract__c.Notice_for_changes_to_royalty_fees__c",
+      "Supplier_Contract__c.Sub_Status__c",
+      "Supplier_Contract__c.Form_of_Agreement__c",
+      "Supplier_Contract__c.Group_List_needs_to_be_provided__c",
+      "Supplier_Contract__c.Updates_to_Group_List_Required__c",
+      "Supplier_Contract__c.Frequency_of_Updates__c",
+      "Supplier_Contract__c.Group_list_changes_require_approval__c",
+      "Supplier_Contract__c.Right_to_Audit_Vendor__c",
+      "Supplier_Contract__c.Audit_Frequency__c",
+      "Supplier_Contract__c.Immediate_under_Material_Breach__c",
+      "Supplier_Contract__c.Liability_of_Interest__c",
+      "Supplier_Contract__c.Maximum_Audit_Period__c",
+      "Supplier_Contract__c.Notice_Period__c",
+      // 'Supplier_Contract__c.Party_responsible_for_coverage_of_Audit__c',
+      "Supplier_Contract__c.Record_Retention_Period_Post_Termination__c",
+      "Supplier_Contract__c.Record_Retention_Period__c",
+      "Supplier_Contract__c.Situations_where_liable_for_audit_costs__c",
+      "Supplier_Contract__c.Law_of_Agreement_Country__c",
+      "Supplier_Contract__c.Term_type__c",
+      "Supplier_Contract__c.Vendor_to_provide_document_updates__c",
+      "Supplier_Contract__c.Direct_loss_is_excluded_for_Supplier__c",
+      "Supplier_Contract__c.Contract_required_subscriber_agreement__c",
+      "Supplier_Contract__c.Subscriber_agreement_updates_required__c",
+      "Supplier_Contract__c.Details_of_Supplier_Conditions_Text__c",
+      "Supplier_Contract__c.Status__c",
+      "Supplier_Contract__c.Regulatory_Requirements__c",
+      "Supplier_Contract__c.Approval_of_Service_Facilitators__c",
+      "Supplier_Contract__c.Notice_minor_data_content_changes__c",
+      "Supplier_Contract__c.Notice_minor_technical_changes__c",
+      "Supplier_Contract__c.Notice_major_technical_changes__c",
+      "Supplier_Contract__c.Notice_major_data_content_changes__c",
+      "Supplier_Contract__c.Supplier_Contract_Reference__c",
+      "Supplier_Contract__c.Other_Audit_Frequency__c",
+      "Supplier_Contract__c.Contractual_Price_Increase_Details__c",
+      "Supplier_Contract__c.Details_of_Service_Level_Terms__c",
+      "Supplier_Contract__c.Details_of_Additional_Supplier_Warrantie__c",
+      "Supplier_Contract__c.Change_control_termination_rights_detail__c",
+      "Supplier_Contract__c.Custom_Termination_Process_If_Other__c",
+      "Supplier_Contract__c.Audit_Record_Retention_Period_Other__c",
+      "Supplier_Contract__c.Notice_Other_Royalty_Fee_Changes__c",
+      "Supplier_Contract__c.Frequency_Other_of_Fee_Changes__c",
+      "Supplier_Contract__c.Notice_Other_Minor_Technical_Changes__c",
+      "Supplier_Contract__c.Notice_Other_Major_Technical_Changes__c",
+      "Supplier_Contract__c.Notice_Other_Major_Data_Changes__c",
+      "Supplier_Contract__c.Notice_Other_Minor_Data_Changes__c",
+      "Supplier_Contract__c.Brief_Summary__c",
+      "Supplier_Contract__c.Overview_of_required_documentation__c",
+      "Supplier_Contract__c.Maximum_Audit_Period_Other__c",
+      "Supplier_Contract__c.Notice_Other_Audit__c",
+      "Supplier_Contract__c.Record_Period_Other_Post_Termination__c",
+      "Supplier_Contract__c.Vendor_s_Handover_BU__c",
+      "Supplier_Contract__c.Initial_Term_Length_Other__c",
+      "Supplier_Contract__c.Renewal_Term_Length_Other__c",
+      "Supplier_Contract__c.Include_liability_cap_supplier_currency__c",
+      "Supplier_Contract__c.Include_liability_cap_for_supplier__c",
+      "Supplier_Contract__c.Supplier_Liability_Cap_Variable__c",
+      "Supplier_Contract__c.Supplier_s_supply_chain_ethical_code__c",
+      // 'Supplier_Contract__c.valIncludeliabilitycapvendorcurrency',
+      "Supplier_Contract__c.Vendor_Liability_Cap_Variable__c",
+      "Supplier_Contract__c.Include_liability_cap_for_vendor__c",
+      "Supplier_Contract__c.Include_liability_cap_vendor_currency__c",
+      "Supplier_Contract__c.Death_in_service_liability_UK__c",
+      "Supplier_Contract__c.Affiliates_Definition__c",
+      "Supplier_Contract__c.Group_Definition__c",
+      "Supplier_Contract__c.Explanation_of_why_not__c",
+      "Supplier_Contract__c.Vendor_Activity_Description__c",
+      "Supplier_Contract__c.Regulatory_History__c",
+      "Supplier_Contract__c.External_Dependency__c",
+      "Supplier_Contract__c.Supplier_Dependency__c",
+      "Supplier_Contract__c.Outsourcing__c",
+      "Supplier_Contract__c.Legal_Oversight__c",
+      "Supplier_Contract__c.Verification_of_Outsourcing__c",
+      "Supplier_Contract__c.Due_Diligence_Checks__c",
+      "Supplier_Contract__c.Data_Quality_Verification__c",
+      "Supplier_Contract__c.Supplier_Co_operation__c",
+      "Supplier_Contract__c.Termination_of_Outsourcing__c",
+      "Supplier_Contract__c.Details_regulation__c",
+      "Supplier_Contract__c.Subscriber_Agreement_Definition__c",
+      "Supplier_Contract__c.Additional_terms_beyond_Vendors_standard__c",
+      "Supplier_Contract__c.Excluded_Entities__c",
+      "Supplier_Contract__c.Permitted_Entities__c",
+      "Supplier_Contract__c.Service_Facilitator_Definition__c",
+      "Supplier_Contract__c.Audit_Guidelines__c",
+      "Supplier_Contract__c.Details_of_Other_Scope_of_Group_Coverage__c",
+      "Supplier_Contract__c.Details_of_Supplier_Data_Quality_Warrant__c",
+      "Supplier_Contract__c.Details_of_level_playing_field_policy__c",
+      "Supplier_Contract__c.Direct_loss_is_capped_for_Refinitiv__c",
+      "Supplier_Contract__c.Renewal_Start_Date__c", 
+      "Supplier_Contract__c.Renewal_End_Date__c", 
+      "Supplier_Contract__c.Termination_Initiated_by__c",
+      "Supplier_Contract__c.Termination_Effective_Date__c",
+      "Supplier_Contract__c.Last_Commitment_Date_Vendor__c",
+      "Supplier_Contract__c.Reason_Last_Commitment_Vendor__c",
+      "Supplier_Contract__c.Reason_Last_Commitment_Vendor_Other__c",
+      "Supplier_Contract__c.Reasons_for_Termination__c",
+      "Supplier_Contract__c.Reason_For_Cancellation__c",
+      "Supplier_Contract__c.Direct_loss_is_excluded_for_Refinitiv__c",
+      "Supplier_Contract__c.Other_Circumstances__c",
+      "Supplier_Contract__c.Situations_where_audit_coverage_differs__c",
+      "Supplier_Contract__c.Basis_for_Interest_calculation__c",
+      "Supplier_Contract__c.Limit_for_Report_Corrections__c"
+    ]
+    })
+
+    wiredRecord({ error, data }) {
+        if (data) {
+            
+      if ( data.fields.Group_License__c.value == "No" || data.fields.Group_License__c.value == "Not Stated" 
+      ) {
+                this.disableGroupRelatedFieldOne = true;
+                this.disableGroupRelatedFieldTwo = false;
+      } else if (data.fields.Group_License__c.value == "Yes") {
+                this.disableGroupRelatedFieldOne = false;
+                this.disableGroupRelatedFieldTwo = true;
             }
-        }).then(() => {
-            // Ensure event is dispatched after navigation
-            this.dispatchEvent(new CustomEvent('alertmodalclose'));
-        });
+
+      if(data.fields.Last_Commitment_Date_Vendor__c.value == null || data.fields.Last_Commitment_Date_Vendor__c.value == "undefined"){
+        this.disableLastComVendor = true;
+        this.disableLastComVendorOther = true;      
+      } else {
+        this.disableLastComVendor = false;
+        if(data.fields.Reason_Last_Commitment_Vendor__c.value == "Other"){
+          this.disableLastComVendorOther = false;
+        }else{
+          this.disableLastComVendorOther = true;
+        }
+      }
+      if (
+        data.fields.Scope_of_Group_Coverage__c.value ==
+          "Heritage LSEG (excluding certain entities)" ||
+        data.fields.Scope_of_Group_Coverage__c.value ==
+          "Heritage RFT (excluding certain entities)" ||
+        data.fields.Scope_of_Group_Coverage__c.value ==
+          "New LSEG (excluding certain entities)"
+      ) {
+                this.disableGroupRelatedFieldThree = false;
+                this.disableGroupRelatedFieldFour = true;
+                this.disableGroupRelatedFieldFive = true;
+      } else if (
+        data.fields.Scope_of_Group_Coverage__c.value ==
+        "Limited permitted entities only"
+      ) {
+                this.disableGroupRelatedFieldFour = false;
+                this.disableGroupRelatedFieldThree = true;
+                this.disableGroupRelatedFieldFive = true;
+      } else if (data.fields.Scope_of_Group_Coverage__c.value == "Other") {
+                this.disableGroupRelatedFieldFive = false;
+                this.disableGroupRelatedFieldThree = true;
+                this.disableGroupRelatedFieldFour = true;
+      } else if ( data.fields.Subscriber_Agreement_Required__c.value == 'No' || data.fields.Subscriber_Agreement_Required__c.value == 'Not Stated' || data.fields.Subscriber_Agreement_Required__c.value == null) {
+        this.disableGroupRelatedFieldTen = true;
+      } else {
+                this.disableGroupRelatedFieldThree = true;
+                this.disableGroupRelatedFieldFour = true;
+                this.disableGroupRelatedFieldFive = true;
+        this.disableGroupRelatedFieldTen = false;
+            }
+            
+      // else {
+      //     this.disableGroupRelatedFieldTen = false;
+      // }
+
+      // }
+      this.disableInputField =
+        data.fields.Is_Handover__c.value == "Yes" ? false : true;
+      this.disableLawofAgreementCountry =
+        data.fields.Law_of_Agreement_Country__c.value == "England and Wales"
+          ? false
+          : true;
+      this.disableRecordRetentionPeriodPostTermination =
+        data.fields.Record_Retention_Period_Post_Termination__c.value == "Other"
+          ? false
+          : true;
+      this.disableNoticeminordatacontentchanges =
+        data.fields.Notice_minor_data_content_changes__c.value == "Other"
+          ? false
+          : true;
+      this.disableNoticePeriodMinorTechnicalChanges =
+        data.fields.Notice_minor_technical_changes__c.value == "Other"
+          ? false
+          : true;
+      this.disableNoticePeriodMajorTechnicalChanges =
+        data.fields.Notice_major_technical_changes__c.value == "Other"
+          ? false
+          : true;
+      this.disableNoticePeriodMajorDataChanges =
+        data.fields.Notice_major_data_content_changes__c.value == "Other"
+          ? false
+          : true;
+            
+            // this.disableAuditFrequency	= data.fields.Audit_Frequency__c.value == 'Other' ? false : true;
+      this.disableMaximumAuditPeriod =
+        data.fields.Maximum_Audit_Period__c.value == "Other" ? false : true;
+      this.disableRegulatoryRequirements = data.fields.Regulatory_Requirements__c.value == "Yes" || data.fields.Regulatory_Requirements__c.value == '' ? false : true;
+      this.disableRighttoAuditVendor = data.fields.Right_to_Audit_Vendor__c.value == "Yes" ? false : true; // audit guild
+      this.disabledBasisforInterestcalculation = data.fields.Liability_of_Interest__c.value == "Yes" ? false : true; // audit guild
+      this.disabledOtherCircumstances = data.fields.Situations_where_liable_for_audit_costs__c.value == "Other / Custom" ? false : true; 
+      this.disableRecordRetentionPeriod =
+        data.fields.Record_Retention_Period__c.value == "Other" ? false : true;
+      this.disableNoticePeriod =
+        data.fields.Notice_Period__c.value == "Other" ? false : true;
+
+      this.disableGroupRelatedFieldSix =
+        data.fields.Supplier_accepts_the_use_of_third_partie__c.value == "Yes"
+          ? false
+          : true;
+      this.disableGroupRelatedFieldSeven =
+        data.fields.Restrictions_for_subscriber_charges__c.value == "Yes"
+          ? false
+          : true;
+      this.disableGroupRelatedFieldEight =
+        data.fields.Contractual_Price_Increase__c.value == "Yes" ? false : true;
+      this.disableGroupRelatedFieldnine =
+        data.fields.Website_Usage_rights__c.value == "Yes" ? false : true;
+      // this.disableGroupRelatedFieldTen = data.fields.Subscriber_Agreement_Required__c.value !== ('No' || 'Not Stated') ? false : true;
+      // this.disableGroupRelatedFieldTen = data.fields.Subscriber_Agreement_Required__c.value == 'No' ? false : true;
+      // this.disableGroupRelatedFieldTen = data.fields.Subscriber_Agreement_Required__c.value == 'Not Stated' ? false : true;
+      this.disableRenewalFieldOne =
+        data.fields.Initial_Term_Length__c.value == "Other" ? false : true;
+      this.disableRenewalFieldTwo =
+        data.fields.Term_Length__c.value == "Other" ? false : true;
+      this.disableRenewalFieldThree =
+        data.fields.Supplier_Termination_Process__c.value == "Other"
+          ? false
+          : true;
+      this.disableLegalFieldOne =
+        data.fields.Supplier_data_quality_warranties_exist__c.value == "Yes"
+          ? false
+          : true;
+      this.disableLegalFieldTwo =
+        data.fields.Level_playing_field_warranties_exist__c.value == "Yes"
+          ? false
+          : true;
+      this.disableLegalFieldThree =
+        data.fields.Direct_loss_is_capped_for_Supplier__c.value == "Yes"
+          ? false
+          : true;
+      this.disableLegalFieldFour =
+        data.fields.Supplier_ethical_code_Status__c.value == "Negotiated" || data.fields.Supplier_ethical_code_Status__c.value == "Agreed Supplier Standard" ||
+        data.fields.Supplier_ethical_code_Status__c.value ==
+          "Agreed Vendor Standard"
+          ? false
+          : true;
+      this.disableLegalFieldFive =
+        data.fields.Additional_Supplier_Warranties__c.value == "Yes"
+          ? false
+          : true;
+      this.disableLegalFieldSix =
+        data.fields.Vendors_liabilities_uncapped__c.value == "Yes"
+          ? false
+          : true;
+      this.disableLegalFieldSeven =
+        data.fields.Right_to_terminate_in_case_of_assignment__c.value == "Yes"
+          ? false
+          : true;
+      this.disableTerminationInitiated = data.fields.Termination_Initiated_by__c.value == 'Mutual Agreement' ||data.fields.Termination_Initiated_by__c.value == 'Vendor Initiated' || data.fields.Termination_Initiated_by__c.value == 'Supplier Initiated' ? false : true;
+      this.disableGroupListneedsprovided = data.fields.Group_List_needs_to_be_provided__c.value == 'Yes' ? false : true;
+      this.disableDataSupportOne = data.fields.Service_Level_Terms__c.value == "Yes" ? false : true;
+      this.disableDirectlossexcludedforRefinitiv = data.fields.Direct_loss_is_excluded_for_Refinitiv__c.value == "No" ? false : true;
+      this.disableDataSupportTwo =
+        data.fields.Vendor_to_provide_technical_documents__c.value == "Yes"
+          ? false
+          : true;
+      this.disableDataSupportThree =
+        data.fields.Free_product_access__c.value == "Yes" ? false : true;
+      this.disableDataSupportFour =
+        data.fields.Does_a_separate_SLA_document_exist__c.value == "Yes"
+          ? false
+          : true;
+      this.disableReportingFieldOne =
+        data.fields.Fee_change_frequency__c.value == "Other" ? false : true;
+      this.disableReportingFieldTwo =
+        data.fields.Notice_for_changes_to_royalty_fees__c.value == "Other"
+          ? false
+          : true;
+      // this.disableReportingFieldThree = data.fields.Limit_for_Report_Corrections__c.value == 'Yes' ? false : true;
+      this.disableLegalFieldFourCancelled =
+        data.fields.Status__c.value == "Cancelled" ? false : true;
+
+      this.valAuditGuidelines = data.fields.Audit_Guidelines__c.value;
+      this.valServiceFacilitatorDefinition = data.fields.Service_Facilitator_Definition__c.value;
+      this.valExcludedEntities = data.fields.Excluded_Entities__c.value;
+      this.valPermittedEntities = data.fields.Permitted_Entities__c.value;
+      this.valDetailsofOtherScopeofGroupCoverage =
+        data.fields.Details_of_Other_Scope_of_Group_Coverage__c.value;
+      this.valSubscriberAgreementDefinition =
+        data.fields.Subscriber_Agreement_Definition__c.value;
+      this.valAdditionaltermsbeyondVendorsstandard =
+        data.fields.Additional_terms_beyond_Vendors_standard__c.value;
+        this.valTerminationInitiatedby = data.fields.Termination_Initiated_by__c.value;
+        this.valTerminationEffectiveDate = data.fields.Termination_Effective_Date__c.value;
+        this.valReasonsforTermination = data.fields.Reasons_for_Termination__c.value;
+        this.valReasonForCancellation = data.fields.Reason_For_Cancellation__c.value;
+      this.valDirectlossisexcludedforRefinitiv = data.fields.Direct_loss_is_capped_for_Refinitiv__c.value;
+      this.valRenewalStartDate = data.fields.Renewal_Start_Date__c.value; 
+      this.valRenewalEndDate = data.fields.Renewal_End_Date__c.value; 
+      this.valSituationswhereAuditCoveragediffers = data.fields.Situations_where_audit_coverage_differs__c.value; 
+
+      this.valDirectlossiscappedforRefinitiv = data.fields.Direct_loss_is_excluded_for_Refinitiv__c.value;
+      this.valExplanationofwhynot = data.fields.Explanation_of_why_not__c.value;
+      this.valGroupDefinition = data.fields.Group_Definition__c.value;
+      this.valAffiliatesDefinition = data.fields.Affiliates_Definition__c.value;
+      this.valWebsiteUsagerights = data.fields.Website_Usage_rights__c.value;
+      this.valOtherCircumstances = data.fields.Other_Circumstances__c.value;
+      this.valBasisforInterestcalculation = data.fields.Basis_for_Interest_calculation__c.value;
+      this.valExceptionstowebsiteuse =
+        data.fields.Exceptions_to_website_use__c.value;
+      this.valDeathinserviceliabilityUK =
+        data.fields.Death_in_service_liability_UK__c.value;
+      this.valIncludeliabilitycapforvendor =
+        data.fields.Include_liability_cap_for_vendor__c.value;
+      this.valVendorLiabilityCapVariable =
+        data.fields.Vendor_Liability_Cap_Variable__c.value;
+      // this.valIncludeliabilitycapvendorcurrency = data.fields.Include_liability_cap_vendor_currency__c.value;
+      this.valVendorsliabilitiesuncapped =
+        data.fields.Vendors_liabilities_uncapped__c.value;
+      this.valSupplierssupplychainethicalcode =
+        data.fields.Supplier_s_supply_chain_ethical_code__c.value;
+      this.valSupplierethicalcodeStatus =
+        data.fields.Supplier_ethical_code_Status__c.value;
+      this.valSupplierLiabilityCapVariable =
+        data.fields.Supplier_Liability_Cap_Variable__c.value;
+      this.valIncludeliabilitycapforsupplier =
+        data.fields.Include_liability_cap_for_supplier__c.value;
+      this.valIncludeliabilitycapsuppliercurrency =
+        data.fields.Include_liability_cap_supplier_currency__c.value;
+      this.valRenewalTermLengthOther =
+        data.fields.Renewal_Term_Length_Other__c.value;
+      this.valInitialTermLengthOther =
+        data.fields.Initial_Term_Length_Other__c.value;
+      this.valHandoverContract = data.fields.Is_Handover__c.value;
+      this.valVendorsHandoverBU = data.fields.Vendor_s_Handover_BU__c.value;
+      this.valRecordPeriodOtherPostTermination =
+        data.fields.Record_Period_Other_Post_Termination__c.value;
+      this.valNoticeOtherAudit = data.fields.Notice_Other_Audit__c.value;
+      this.valMaximumAuditPeriodOther =
+        data.fields.Maximum_Audit_Period_Other__c.value;
+      this.valOverviewofrequireddocumentation =
+        data.fields.Overview_of_required_documentation__c.value;
+      this.valBriefSummary = data.fields.Brief_Summary__c.value;
+      this.valFreeproductaccess = data.fields.Free_product_access__c.value;
+      this.valNoticeOtherMinorDataChanges =
+        data.fields.Notice_Other_Minor_Data_Changes__c.value;
+      this.valNoticeminordatacontentchanges =
+        data.fields.Notice_minor_data_content_changes__c.value;
+      this.valNoticeOtherMajorDataChanges =
+        data.fields.Notice_Other_Major_Data_Changes__c.value;
+      this.valNoticemajordatacontentchanges =
+        data.fields.Notice_major_data_content_changes__c.value;
+      this.valNoticeOtherMajorTechnicalChanges =
+        data.fields.Notice_Other_Major_Technical_Changes__c.value;
+      this.valNoticemajortechnicalchanges =
+        data.fields.Notice_major_technical_changes__c.value;
+      this.valNoticeminortechnicalchanges =
+        data.fields.Notice_minor_technical_changes__c.value;
+      this.valNoticeOtherMinorTechnicalChanges =
+        data.fields.Notice_Other_Minor_Technical_Changes__c.value;
+      this.valFrequencyOtherofFeeChanges =
+        data.fields.Frequency_Other_of_Fee_Changes__c.value;
+      this.valFeechangefrequency = data.fields.Fee_change_frequency__c.value;
+      this.valNoticeforchangestoroyaltyfees =
+        data.fields.Notice_for_changes_to_royalty_fees__c.value;
+      this.valNoticeOtherRoyaltyFeeChanges =
+        data.fields.Notice_Other_Royalty_Fee_Changes__c.value;
+      this.valAuditRecordRetentionPeriodOther =
+        data.fields.Audit_Record_Retention_Period_Other__c.value;
+      this.valSupplierTerminationProcess =
+        data.fields.Supplier_Termination_Process__c.value;
+      this.valCustomTerminationProcessIfOther =
+        data.fields.Custom_Termination_Process_If_Other__c.value;
+      this.valChangecontrolterminationrightsdetail =
+        data.fields.Change_control_termination_rights_detail__c.value;
+      this.valRighttoterminateincaseofassignment =
+        data.fields.Right_to_terminate_in_case_of_assignment__c.value;
+      this.valAdditionalSupplierWarranties =
+        data.fields.Additional_Supplier_Warranties__c.value;
+      this.valDetailsofAdditionalWarranties =
+        data.fields.Details_of_Additional_Supplier_Warrantie__c.value;
+      this.valServiceLevelTerms = data.fields.Service_Level_Terms__c.value;
+      this.valDetailsofServiceLevelTerms =
+        data.fields.Details_of_Service_Level_Terms__c.value;
+      this.valOtherAuditFrequency = data.fields.Other_Audit_Frequency__c.value;
+      this.valContractualPriceIncrease =
+        data.fields.Contractual_Price_Increase__c.value;
+      this.valContractualPriceIncreaseDetails =
+        data.fields.Contractual_Price_Increase_Details__c.value;
+      this.valLimitforReportCorrections = data.fields.Limit_for_Report_Corrections__c.value;
+      this.valRegulatoryRequirements =
+        data.fields.Regulatory_Requirements__c.value;
+      this.ValStatus = data.fields.Status__c.value;
+      this.ValSubStatus = data.fields.Sub_Status__c.value;
+      this.ValDateVendor = data.fields.Last_Commitment_Date_Vendor__c.value;
+      this.ValLastComVendor = data.fields.Reason_Last_Commitment_Vendor__c.value;
+      this.ValLastComVendorOther = data.fields.Reason_Last_Commitment_Vendor_Other__c.value;
+      this.valFormofAgreement = data.fields.Form_of_Agreement__c.value;
+      this.valGroupLicense = data.fields.Group_License__c.value;
+      this.valGroupListneedstobeprovided =
+        data.fields.Group_List_needs_to_be_provided__c.value;
+      this.valUpdatestoGroupListRequired =
+        data.fields.Updates_to_Group_List_Required__c.value;
+      this.valFrequencyofUpdate = data.fields.Frequency_of_Updates__c.value;
+      this.valGrouplistchangesrequireapproval =
+        data.fields.Group_list_changes_require_approval__c.value;
+      this.valScopeofGroupCoverage =
+        data.fields.Scope_of_Group_Coverage__c.value;
+      this.valRestrictionsforsubscribercharges =
+        data.fields.Restrictions_for_subscriber_charges__c.value;
+      this.valSupplieracceptstheuseofthirdpartie =
+        data.fields.Supplier_accepts_the_use_of_third_partie__c.value;
+      this.valApprovalofServiceFacilitators =
+        data.fields.Approval_of_Service_Facilitators__c.value;
+
+      this.valRighttoAuditVendor = data.fields.Right_to_Audit_Vendor__c.value;
+      this.valAuditFrequency = data.fields.Audit_Frequency__c.value;
+      this.valImmediateunderMaterialBreach =
+        data.fields.Immediate_under_Material_Breach__c.value;
+      this.valLiabilityofInterest = data.fields.Liability_of_Interest__c.value;
+      this.valMaximumAuditPeriod = data.fields.Maximum_Audit_Period__c.value;
+      this.valNoticePeriod = data.fields.Notice_Period__c.value;
+      this.valSupplierdataqualitywarrantiesexist =
+        data.fields.Supplier_data_quality_warranties_exist__c.value;
+      this.valDetailsofSupplierDataQualityWarrant =
+        data.fields.Details_of_Supplier_Data_Quality_Warrant__c.value;
+      this.valLevelplayingfieldwarrantiesexist =
+        data.fields.Level_playing_field_warranties_exist__c.value;
+      this.valDetailsoflevelplayingfieldpolicy =
+        data.fields.Details_of_level_playing_field_policy__c.value;
+
+      // this.valPartyresponsibleforcoverageofAudit = data.fields.Party_responsible_for_coverage_of_Audit__c.value;
+      this.valRecordRetentionPeriodPostTermination =
+        data.fields.Record_Retention_Period_Post_Termination__c.value;
+      this.valRecordRetentionPeriod =
+        data.fields.Record_Retention_Period__c.value;
+      this.valLiabilityforAuditCosts =
+        data.fields.Situations_where_liable_for_audit_costs__c.value;
+      this.valLawofAgreementCountryc =
+        data.fields.Law_of_Agreement_Country__c.value;
+      this.valTermtype = data.fields.Term_type__c.value;
+      this.valTermLength = data.fields.Initial_Term_Length__c.value;
+      this.misTeamLengthVal = data.fields.Term_Length__c.value;
+      this.valVendortoprovidetechnicaldocuments =
+        data.fields.Vendor_to_provide_technical_documents__c.value;
+      this.valVendortoprovidedocumentupdates =
+        data.fields.Vendor_to_provide_document_updates__c.value;
+      this.valDirectlossisexcludedforSupplier =
+        data.fields.Direct_loss_is_excluded_for_Supplier__c.value;
+      this.valDirectlossiscappedforSupplier =
+        data.fields.Direct_loss_is_capped_for_Supplier__c.value;
+      this.valSubscriberAgreementRequired =
+        data.fields.Subscriber_Agreement_Required__c.value;
+      this.valContractrequiredsubscriberagreement =
+        data.fields.Contract_required_subscriber_agreement__c.value;
+      this.valSubscriberagreementupdatesrequired =
+        data.fields.Subscriber_agreement_updates_required__c.value;
+      this.valDetailsofSupplierConditionsText =
+        data.fields.Details_of_Supplier_Conditions_Text__c.value;
+      this.valDoesaseparateSLAdocumentexist =
+        data.fields.Does_a_separate_SLA_document_exist__c.value;
+      this.valSupplierContractReference =
+        data.fields.Supplier_Contract_Reference__c.value;
+      this.valVendorActivityDescription =
+        data.fields.Vendor_Activity_Description__c.value;
+      this.valRegulatoryHistory = data.fields.Regulatory_History__c.value;
+      this.valExternalDependency = data.fields.External_Dependency__c.value;
+      this.valSupplierDependency = data.fields.Supplier_Dependency__c.value;
+      this.valOutsourcing = data.fields.Outsourcing__c.value;
+      this.valLegalOversight = data.fields.Legal_Oversight__c.value;
+      this.valVerificationofOutsourcing =
+        data.fields.Verification_of_Outsourcing__c.value;
+      this.valDueDiligenceChecks = data.fields.Due_Diligence_Checks__c.value;
+      this.valDataQualityVerification =
+        data.fields.Data_Quality_Verification__c.value;
+      this.valSupplierCooperation = data.fields.Supplier_Co_operation__c.value;
+      this.valTerminationofOutsourcing =
+        data.fields.Termination_of_Outsourcing__c.value;
+      this.valDetailsregulationcval = data.fields.Details_regulation__c.value;
+        }
     }
+    closeQuickAction() {
+        this.dispatchEvent(new CloseActionScreenEvent());
+    }
+    // get bDisableBackBtn() {
+    //     return Number(this.activeTab) == 1 ? true : false;
+    // }
+
+
+    // get bDisableNextBtn() {
+    //     return Number(this.activeTab) == 7 ? true : false;
+    // }
+
+    // handleActive(event) {
+    //     this.activeTab = event.target.value;
+    // }
+
+    handleEdit() {
+
+        const activeTabVal = new CustomEvent('handleEdit',{
+            detail: this.activeTab
+        });
+        this.dispatchEvent(activeTabVal)
+        // this.showEditField = !this.showEditField;
+    }
+    onSaveClick() {
+        console.log('148778 :');
+        this.isLoaded = !this.isLoaded;
+    }
+
+    handleSuccess() {
+        this.isLoaded = !this.isLoaded;
+
+    this.showEditField = false;
+        const event = new ShowToastEvent({
+      title: "Success",
+      message: "Record has been updated successfully.",
+      variant: "success",
+      mode: "dismissable"
+        });
+        this.dispatchEvent(event);
+        this.closeQuickAction();
+    }
+    checkfieldName(event) {
+        let currentValue = event.target.value;
+    this.valHandoverContract = currentValue;
+    if (currentValue == "Yes") {
+            this.disableInputField = false;
+    } else {
+            this.disableInputField = true;
+        }
+    }
+    onCancelClick() {
+        // this.showEditField = !this.showEditField;
+    }
+    checkfieldGroupLicense(event) {
+        let currentValue = event.target.value;
+    this.valGroupLicense = currentValue;
+    if (currentValue == "No" || currentValue == "Not Stated" || currentValue == "" ) {
+            this.disableGroupRelatedFieldOne = true;
+            this.disableGroupRelatedFieldTwo = false;
+    } else if (currentValue == "Yes") {
+            this.disableGroupRelatedFieldOne = false;
+            this.disableGroupRelatedFieldTwo = true;
+        }
+    }
+    checkfieldGroupCoverage(event) {
+        let currentValue = event.target.value;
+    this.valScopeofGroupCoverage = currentValue;
+    if (
+      currentValue == "Heritage LSEG (excluding certain entities)" ||
+      currentValue == "Heritage RFT (excluding certain entities)" ||
+      currentValue == "New LSEG (excluding certain entities)"
+    ) {
+            this.disableGroupRelatedFieldThree = false;
+            this.disableGroupRelatedFieldFour = true;
+            this.disableGroupRelatedFieldFive = true;
+    } else if (currentValue == "Limited permitted entities only") {
+            this.disableGroupRelatedFieldFour = false;
+            this.disableGroupRelatedFieldThree = true;
+            this.disableGroupRelatedFieldFive = true;
+    } else if (currentValue == "Other") {
+            this.disableGroupRelatedFieldFive = false;
+            this.disableGroupRelatedFieldThree = true;
+            this.disableGroupRelatedFieldFour = true;
+    } else {
+            this.disableGroupRelatedFieldThree = true;
+            this.disableGroupRelatedFieldFour = true;
+            this.disableGroupRelatedFieldFive = true;
+        }
+    }
+    checkfieldThirdParty(event) {
+        let currentValue = event.target.value;
+    this.valSupplieracceptstheuseofthirdpartie = currentValue;
+    if (currentValue == "Yes") {
+            this.disableGroupRelatedFieldSix = false;
+    } else {
+            this.disableGroupRelatedFieldSix = true;
+        }
+    }
+    checkfieldSubscriber(event) {
+        let currentValue = event.target.value;
+    this.valRestrictionsforsubscribercharges = currentValue;
+    if (currentValue == "Yes") {
+            this.disableGroupRelatedFieldSeven = false;
+    } else {
+            this.disableGroupRelatedFieldSeven = true;
+        }
+    }
+    checkfieldContract(event) {
+        let currentValue = event.target.value;
+    this.valContractualPriceIncrease = currentValue;
+    if (currentValue == "Yes") {
+            this.disableGroupRelatedFieldEight = false;
+    } else {
+            this.disableGroupRelatedFieldEight = true;
+        }
+    }
+    checkfieldWebsite(event) {
+        let currentValue = event.target.value;
+    this.valWebsiteUsagerights = currentValue;
+    if (currentValue == "Yes") {
+            this.disableGroupRelatedFieldnine = false;
+    } else {
+            this.disableGroupRelatedFieldnine = true;
+        }
+    }
+    checkfieldAgreement(event) {
+        let currentValue = event.target.value;
+    this.valSubscriberAgreementRequired = currentValue;
+
+    if(currentValue == 'No' || currentValue == 'Not Stated' || currentValue == ''){
+      this.disableGroupRelatedFieldTen = true;
+
+    }else {
+            this.disableGroupRelatedFieldTen = false;
+        }
+
+    }
+    checkfieldTermLength(event) {
+        let currentValue = event.target.value;
+    this.valTermLength = currentValue;
+    this.disableRenewalFieldOne = currentValue == "Other" ? false : true;
+    }
+    checkfieldRenewalTermLength(event) {
+        let currentValue = event.target.value;
+    this.misTeamLengthVal = currentValue;
+    this.disableRenewalFieldTwo = currentValue == "Other" ? false : true;
+    }
+    checkfieldTerminationProcess(event) {
+        let currentValue = event.target.value;
+    this.valSupplierTerminationProcess = currentValue;
+    this.disableRenewalFieldThree = currentValue == "Other" ? false : true;
+    }
+    checkfieldQualityExist(event) {
+        let currentValue = event.target.value;
+    this.valSupplierdataqualitywarrantiesexist = currentValue;
+    this.disableLegalFieldOne = currentValue == "Yes" ? false : true;
+    }
+    checkfieldPlayingFieldExist(event) {
+        let currentValue = event.target.value;
+    this.valLevelplayingfieldwarrantiesexist = currentValue;
+    this.disableLegalFieldTwo = currentValue == "Yes" ? false : true;
+    }
+    checkfieldCappedSupplier(event) {
+        let currentValue = event.target.value;
+    this.valDirectlossiscappedforSupplier = currentValue;
+    this.disableLegalFieldThree = currentValue == "Yes" ? false : true;
+    }
+    checkfieldCodeStatus(event) {
+        let currentValue = event.target.value;
+    this.valSupplierethicalcodeStatus = currentValue;
+    this.disableLegalFieldFour =
+      currentValue == "Negotiated" ||
+      currentValue == "Agreed Supplier Standard" ||
+      currentValue == "Agreed Vendor Standard"
+        ? false
+        : true;
+    }
+    checkfieldSupplierWarranties(event) {
+        let currentValue = event.target.value;
+    this.valAdditionalSupplierWarranties = currentValue;
+    this.disableLegalFieldFive = currentValue == "Yes" ? false : true;
+    }
+    checkfieldLiabilitiesUncapped(event) {
+        let currentValue = event.target.value;
+    this.valVendorsliabilitiesuncapped = currentValue;
+    this.disableLegalFieldSix = currentValue == "Yes" ? false : true;
+    }
+    checkfieldCaseAssignment(event) {
+        let currentValue = event.target.value;
+    this.valRighttoterminateincaseofassignment = currentValue;
+    this.disableLegalFieldSeven = currentValue == "Yes" ? false : true;
+    }
+    checkfieldLevelTerm(event) {
+        let currentValue = event.target.value;
+    this.valServiceLevelTerms = currentValue;
+    this.disableDataSupportOne = currentValue == "Yes" ? false : true;
+    }
+    checkfieldTechnical(event) {
+        let currentValue = event.target.value;
+    this.valVendortoprovidetechnicaldocuments = currentValue;
+    this.disableDataSupportTwo = currentValue == "Yes" ? false : true;
+    }
+    checkfieldAccess(event) {
+        let currentValue = event.target.value;
+    this.valFreeproductaccess = currentValue;
+    this.disableDataSupportThree = currentValue == "Yes" ? false : true;
+    }
+    checkfieldDocumentExist(event) {
+        let currentValue = event.target.value;
+    this.valDoesaseparateSLAdocumentexist = currentValue;
+    this.disableDataSupportFour = currentValue == "Yes" ? false : true;
+    }
+    checkfeechangefrequency(event) {
+        let currentValue = event.target.value;
+    this.valFeechangefrequency = currentValue;
+    this.disableReportingFieldOne = currentValue == "Other" ? false : true;
+    }
+    checknoticeRoyalty(event) {
+        let currentValue = event.target.value;
+    this.valNoticeforchangestoroyaltyfees = currentValue;
+    this.disableReportingFieldTwo = currentValue == "Other" ? false : true;
+    }
+    checkLimitReportCorr(event) {
+        let currentValue = event.target.value;
+        console.log('Value of this is currentValue : ', currentValue);
+    this.disableReportingFieldThree = currentValue == "Yes" ? false : true;
+    this.valLimitforReportCorrections = currentValue;
+    }
+  handleDetailsofCorrectedReporting(event) {
+    let currentValue = event.target.value;
+    console.log('Value of this is valLimitforReportCorrections : ', this.valLimitforReportCorrections);
+    //this.valDetailsofCorrectedReporting = currentValue;
+          //if (this.valLimitforReportCorrections == "Yes"){
+           this.valDetailsofCorrectedReporting = currentValue;
+          //else if (this.valLimitforReportCorrections == "No"){
+            //Window.location.reload();}
+           //this.valDetailsofCorrectedReporting = "";}
+  }
+    
+    openModal(event) {
+    if (event.target.dataset.value == "cfd1") {
+           this.RegulatoryDependenciesField = false;
+           this.gfd2 = false;
+           this.auditdTemplate = false;
+           this.agreementTemplate = false;
+           this.cfd2 = false;
+           this.cfd3 = false; 
+           this.gfd1 = false;
+           this.renewalTepmplate = false;
+           this.dsd1 = false;
+           this.legalFieldTempalte = false;
+           this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+      this.mfd22 = false;
+this.mfd23 = false;
+           this.cfd1 = true;
+
+      this.mfd18 = false;
+    } else if (event.target.dataset.value == "regulatory") {
+            this.gfd2 = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.gfd1 = false;
+            this.dsd1 = false;
+            this.legalFieldTempalte = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+
+            this.renewalTepmplate = false;
+
+            this.RegulatoryDependenciesField = true;
+    } else if (event.target.dataset.value == "cfd2") {
+            this.RegulatoryDependenciesField = false;
+            this.gfd2 = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.gfd1 = false;
+            this.dsd1 = false;
+            this.legalFieldTempalte = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+      this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+      this.cfd1 = false;
+
+            this.cfd2 = true; 
+            this.cfd3 = false;         
+    }else if (event.target.dataset.value == "cfd3") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.gfd1 = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+this.mfd1 = false;
+this.mfd2 = false;
+this.mfd3 = false;
+this.mfd4 = false;
+this.mfd5 = false;
+this.mfd6 = false;
+this.mfd7 = false;
+this.mfd8 = false;
+this.mfd9 = false;
+this.mfd10 = false;
+this.mfd11 = false;
+this.mfd12 = false;
+this.mfd13 = false;
+this.mfd14 = false;
+this.mfd15 = false;
+this.mfd16 = false;
+this.mfd17 = false;
+this.mfd20 = false;
+this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+this.mfd18 = false;
+this.cfd1 = false;
+
+      this.cfd2 = false;  
+      this.cfd3 = true;       
+} else if (event.target.dataset.value == "gfd1") {
+            this.RegulatoryDependenciesField = false;
+            this.gfd2 = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.renewalTepmplate = false;
+            this.dsd1 = false;
+            this.legalFieldTempalte = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+
+            this.gfd1 = true;
+    } else if (event.target.dataset.value == "gfd2") {
+            this.RegulatoryDependenciesField = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.gfd1 = false;
+            this.renewalTepmplate = false;
+            this.dsd1 = false;
+            this.legalFieldTempalte = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+
+            this.gfd2 = true;
+    } else if (event.target.dataset.value == "auditd1") {
+            this.RegulatoryDependenciesField = false;
+            this.gfd2 = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.gfd1 = false;
+            this.renewalTepmplate = false;
+            this.dsd1 = false;
+            this.legalFieldTempalte = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+
+            this.auditdTemplate = true;
+    } else if (event.target.dataset.value == "agreementD1") {
+            this.RegulatoryDependenciesField = false;
+            this.gfd2 = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.gfd1 = false;
+            this.renewalTepmplate = false;
+            this.dsd1 = false;
+            this.legalFieldTempalte = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+          
+            this.auditdTemplate = false; // BUG
+      this.agreementTemplate = true;
+    } else if (event.target.dataset.value == "renewald1") {
+            this.RegulatoryDependenciesField = false;
+            this.gfd2 = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.gfd1 = false;
+            this.dsd1 = false;
+            this.legalFieldTempalte = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+
+      this.renewalTepmplate = true;
+    } else if (event.target.dataset.value == "dsd1") {
+            this.RegulatoryDependenciesField = false;
+            this.gfd2 = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.gfd1 = false;
+      this.renewalTepmplate = false;
+            this.legalFieldTempalte = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+
+            this.dsd1 = true;
+    } else if (event.target.dataset.value == "legald1") {
+            this.RegulatoryDependenciesField = false;
+            this.gfd2 = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.gfd1 = false;
+      this.renewalTepmplate = false;
+            this.dsd1 = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+
+            this.legalFieldTempalte = true;
+    } else if (event.target.dataset.value == "legald1") {
+            this.RegulatoryDependenciesField = false;
+            this.gfd2 = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.gfd1 = false;
+      this.renewalTepmplate = false;
+            this.dsd1 = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+
+            this.legalFieldTempalte = true;
+    } else if (event.target.dataset.value == "subcriberd1") {
+            this.RegulatoryDependenciesField = false;
+            this.gfd2 = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.gfd1 = false;
+      this.renewalTepmplate = false;
+            this.dsd1 = false;
+            this.legalFieldTempalte = false;
+            this.gfsad2 = false;
+            this.SubscriberTemplate = true;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+    } else if (event.target.dataset.value == "gfsad2") {
+            this.RegulatoryDependenciesField = false;
+            this.gfd2 = false;
+            this.auditdTemplate = false;
+            this.agreementTemplate = false;
+            this.cfd1 = false;
+            this.cfd2 = false;
+            this.cfd3 = false; 
+            this.gfd1 = false;
+      this.renewalTepmplate = false;
+            this.dsd1 = false;
+            this.legalFieldTempalte = false;
+            this.SubscriberTemplate = false;
+            this.gfsad2 = true;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+    } else if (event.target.dataset.value == "mfd1") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = true;
+    } else if (event.target.dataset.value == "mfd2") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = true;
+    } else if (event.target.dataset.value == "mfd3") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = true;
+    } else if (event.target.dataset.value == "mfd4") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = true;
+    } else if (event.target.dataset.value == "mfd5") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = true;
+    } else if (event.target.dataset.value == "mfd6") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = true;
+    } else if (event.target.dataset.value == "mfd7") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = true;
+    } else if (event.target.dataset.value == "mfd8") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = true;
+    } else if (event.target.dataset.value == "mfd9") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = true;
+    } else if (event.target.dataset.value == "mfd10") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = true;
+    } else if (event.target.dataset.value == "mfd11") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = true;
+    } else if (event.target.dataset.value == "mfd12") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd12 = true;
+    } else if (event.target.dataset.value == "mfd13") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+      this.mfd13 = true;
+    } else if (event.target.dataset.value == "mfd14") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd13 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+      this.mfd14 = true;
+    } else if (event.target.dataset.value == "mfd15") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+      this.mfd15 = true;
+    } else if (event.target.dataset.value == "mfd16") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd17 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+      this.mfd16 = true;
+    } else if (event.target.dataset.value == "mfd17") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+this.mfd22 = false;
+this.mfd23 = false;
+      this.mfd18 = false;
+      this.mfd17 = true;
+    } else if (event.target.dataset.value == "mfd18") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd18 = true;
+    } else if (event.target.dataset.value == "mfd19") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd18 = false;
+      this.mfd20 = false;
+      this.mfd19 = true;
+    } else if (event.target.dataset.value == "mfd20") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd18 = false;
+      this.mfd20 = true;
+      this.mfd19 = false;
+    } else if (event.target.dataset.value == "mfd21") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd18 = false;
+      this.mfd20 = false;
+      this.mfd21 = true;
+    } else if (event.target.dataset.value == "mfd22") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd18 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+      this.mfd22 = true;
+    }else if (event.target.dataset.value == "mfd23") {
+      this.RegulatoryDependenciesField = false;
+      this.gfd2 = false;
+      this.auditdTemplate = false;
+      this.agreementTemplate = false;
+      this.cfd1 = false;
+      this.cfd2 = false;
+      this.cfd3 = false; 
+      this.gfd1 = false;
+      this.renewalTepmplate = false;
+      this.dsd1 = false;
+      this.legalFieldTempalte = false;
+      this.SubscriberTemplate = false;
+      this.gfsad2 = false;
+      this.mfd1 = false;
+      this.mfd2 = false;
+      this.mfd3 = false;
+      this.mfd4 = false;
+      this.mfd5 = false;
+      this.mfd6 = false;
+      this.mfd7 = false;
+      this.mfd8 = false;
+      this.mfd9 = false;
+      this.mfd10 = false;
+      this.mfd11 = false;
+      this.mfd13 = false;
+      this.mfd14 = false;
+      this.mfd15 = false;
+      this.mfd16 = false;
+      this.mfd17 = false;
+      this.mfd18 = false;
+      this.mfd20 = false;
+      this.mfd21 = false;
+      this.mfd22 = false;
+      this.mfd23 = true;
+    }else {
+      console.error("Report issue to system admin");
+        }
+    // this.isLoaded = false;
+
+            this.isModalRegulation = true;
+    }
+
+    closeModal() {
+        // to close modal set isModalRegulation tarck value as false
+        this.isModalRegulation = false;
+    }
+    submitDetails() {
+        // to close modal set isModalRegulation tarck value as false
+        //Add your code to call apex method or do some processing
+        this.isModalRegulation = false;
+        // this.renderedCallback();
+        // this.connectedCallback();
+    }
+
+    handleRegulatoryRequirements(event) {
+      let currentValue = event.target.value;
+      this.valRegulatoryRequirements = currentValue;
+      if (currentValue == "No" || currentValue == '') {
+        this.disableRegulatoryRequirements = true;
+      } else {
+        this.disableRegulatoryRequirements = false;
+      }
+    }
+  handleExternalDependency(event) {
+        let currentValue = event.target.value;
+        this.valExternalDependency = currentValue;        
+    }
+  handleLegalOversight(event) {
+        let currentValue = event.target.value;
+        this.valLegalOversight = currentValue;
+    }
+  handleOutsourcing(event) {
+        let currentValue = event.target.value;
+        this.valOutsourcing = currentValue;
+    }
+  handleRegulatoryHistory(event) {
+        let currentValue = event.target.value;
+        this.valRegulatoryHistory = currentValue;
+    }
+  handleSupplierCooperation(event) {
+        let currentValue = event.target.value;
+        this.valSupplierCooperation = currentValue;
+    }
+  handleSupplierDependency(event) {
+        let currentValue = event.target.value;
+        this.valSupplierDependency = currentValue;
+    }
+  handleTerminationofOutsourcing(event) {
+        let currentValue = event.target.value;
+        this.valTerminationofOutsourcing = currentValue;
+    }
+  handleVerificationofOutsourcing(event) {
+        let currentValue = event.target.value;
+        this.valVerificationofOutsourcing = currentValue;
+    }
+
+  handleStatus(event) {
+        let currentValue = event.target.value;
+        this.ValStatus = currentValue;
+    if (currentValue == "Cancelled") {
+      this.disableLegalFieldFourCancelled = false;
+    } else {
+      this.disableLegalFieldFourCancelled = true;
+    }
+  }
+  handleSubStatus(event) {
+        let currentValue = event.target.value;
+    this.ValSubStatus = currentValue;
+    }
+
+    connectedCallback(){  
+      console.log('148778 :');
+      console.log('testSunitha');
+      if(this.ValDateVendor == null || this.ValDateVendor == "undefined"){
+        this.disableLastComVendor = true;
+        this.disableLastComVendorOther = true;
+        this.ValLastComVendor = "";
+        this.ValLastComVendorOther = "";
+      } else{
+        this.disableLastComVendor = false;
+        if(this.ValLastComVendor =="Other"){
+          this.disableLastComVendorOther = false;
+        } else {
+          this.disableLastComVendorOther = true;
+          this.ValLastComVendorOther = "";
+        }
+      }
+      console.log("disableLastComVendor+++"+this.ValDateVendor);
+  
+    }
+    handleDateVendor(event) {
+      let currentValue = event.target.value;
+      this.ValDateVendor = currentValue;
+      if (currentValue == null || this.ValDateVendor == "undefined") {
+        this.ValLastComVendor = '';
+        this.ValLastComVendorOther = '';
+        this.disableLastComVendor = true;
+        this.disableLastComVendorOther = true;
+        
+      } else {
+        this.disableLastComVendor = false;
+        if(this.ValLastComVendor =="Other"){
+          this.disableLastComVendorOther = false;
+        } else {
+          this.ValLastComVendorOther = '';
+          this.disableLastComVendorOther = true;
+          
+        }
+      }
+    }
+    handleLastComVendor(event) {
+      let currentValue = event.target.value;
+      this.ValLastComVendor = currentValue;
+      if (currentValue == "Other") {
+        this.disableLastComVendorOther = false;     
+      } else {      
+        this.disableLastComVendorOther = true;  
+        this.ValLastComVendorOther = "";   
+      }
+    }
+    handleLastComVendorOther(event) {
+      let currentValue = event.target.value;
+      this.ValLastComVendorOther = currentValue;
+    }
+
+  handleContractType(event) {
+        let currentValue = event.target.value;
+        this.valContractType = currentValue;
+    }
+  handleFormofAgreement(event) {
+        let currentValue = event.target.value;
+        this.valFormofAgreement = currentValue;
+    }
+
+  handleGroupListneedstobeprovided(event) {
+            let currentValue = event.target.value;
+            this.valGroupListneedstobeprovided = currentValue;
+    if(currentValue == 'Yes'){
+      this.disableGroupListneedsprovided = false;
+    }else{
+      this.disableGroupListneedsprovided = true;
+
+    }  
+  }
+  handleUpdatestoGroupListRequired(event) {
+            let currentValue = event.target.value;
+            this.valUpdatestoGroupListRequired = currentValue;
+    }  
+  handleFrequencyofUpdate(event) {
+            let currentValue = event.target.value;
+            this.valFrequencyofUpdate = currentValue;
+    }    
+  handleGrouplistchangesrequireapproval(event) {
+            let currentValue = event.target.value;
+            this.valGrouplistchangesrequireapproval = currentValue;
+    } 
+  handleRestrictionsforsubscribercharges(event) {
+        let currentValue = event.target.value;
+        this.valRestrictionsforsubscribercharges = currentValue;
+    }
+    
+  handleRighttoAuditVendor(event) {
+        let currentValue = event.target.value;
+        this.valRighttoAuditVendor = currentValue;
+    if (currentValue == "Yes") {
+      this.disableRighttoAuditVendor = false;
+    } else {
+      this.disableRighttoAuditVendor = true;
+    }
+    }
+    
+  handleImmediateunderMaterialBreach(event) {
+        let currentValue = event.target.value;
+        this.valImmediateunderMaterialBreach = currentValue;
+    }
+  handleLiabilityofInterest(event) {
+        let currentValue = event.target.value;
+        this.valLiabilityofInterest = currentValue;
+    if (currentValue == "Yes") {
+      this.disabledBasisforInterestcalculation = false;
+    } else {
+      this.disabledBasisforInterestcalculation = true;
+    }
+    }
+  handleMaximumAuditPeriod(event) {
+        let currentValue = event.target.value;
+        this.valMaximumAuditPeriod = currentValue;
+    if (currentValue == "Other") {
+      this.disableMaximumAuditPeriod = false;
+    } else {
+      this.disableMaximumAuditPeriod = true;
+    }
+  }
+  handleNoticePeriod(event) {
+        let currentValue = event.target.value;
+        this.valNoticePeriod = currentValue;
+    }
+  handlePartyresponsibleforcoverageofAudit(event) {
+        let currentValue = event.target.value;
+        this.valRestrictionsforsubscribercharges = currentValue;
+    }
+  handleRecordPeriodOtherPostTermination(event) {
+        let currentValue = event.target.value;
+    this.valRecordPeriodOtherPostTermination = currentValue;
+    }
+  handleVendorsHandoverBU(event) {
+        let currentValue = event.target.value;
+    this.valVendorsHandoverBU = currentValue;
+    }
+  handleAuditRecordRetentionPeriodOther(event) {
+        let currentValue = event.target.value;
+    this.valAuditRecordRetentionPeriodOther = currentValue;
+  }
+  handleLiabilityforAuditCosts(event) {
+    let currentValue = event.target.value;
+    this.valLiabilityforAuditCosts = currentValue;
+    if(currentValue == 'Other / Custom'){
+      this.disabledOtherCircumstances = false;
+      this.valOtherCircumstances == ''
+    }else{
+      this.disabledOtherCircumstances = true;
+    }
+  }
+  handleOtherCircumstances(event){
+    let currentValue = event.target.value;
+    this.valOtherCircumstances = currentValue;
+  }
+  handleLawofAgreementCountryc(event) {
+        let currentValue = event.target.value;
+        this.valLawofAgreementCountryc = currentValue;
+    if (currentValue == "England and Wales") {
+      this.disableLawofAgreementCountry = false;
+    } else {
+      this.disableLawofAgreementCountry = true;
+    }
+    }
+
+  handleDeathinserviceliabilityUK(event) {
+        let currentValue = event.target.value;
+        this.valDeathinserviceliabilityUK = currentValue;
+    }
+  handleTermtype(event) {
+        let currentValue = event.target.value;
+        this.valTermtype = currentValue;
+    }
+
+  handleOverviewofrequireddocumentation(event) {
+        let currentValue = event.target.value;
+    this.valOverviewofrequireddocumentation = currentValue;
+  }
+  handleIncludeliabilitycapsuppliercurrency(event) {
+    let currentValue = event.target.value;
+    this.valIncludeliabilitycapsuppliercurrency = currentValue;
+    }
+
+  handleIncludeliabilitycapforsupplier(event) {
+        let currentValue = event.target.value;
+    this.valIncludeliabilitycapforsupplier = currentValue;
+    }
+
+  handleMaximumAuditPeriodOther(event) {
+    let currentValue = event.target.value;
+    this.valMaximumAuditPeriodOther = currentValue;
+  }
+  handleVendortoprovidedocumentupdates(event) {
+        let currentValue = event.target.value;
+        this.valVendortoprovidedocumentupdates = currentValue;
+    }
+  handleDirectlossisexcludedforSupplier(event) {
+        let currentValue = event.target.value;
+        this.valDirectlossisexcludedforSupplier = currentValue;
+    }
+
+  handleContractrequiredsubscriberagreement(event) {
+        let currentValue = event.target.value;
+    this.valContractrequiredsubscriberagreement = currentValue;
+  }
+  handleSubscriberagreementupdatesrequired(event) {
+    let currentValue = event.target.value;
+    this.valSubscriberagreementupdatesrequired = currentValue;
+  }
+  handleDetailsofSupplierConditionsText(event) {
+    let currentValue = event.target.value;
+    this.valDetailsofSupplierConditionsText = currentValue;
+  }
+  handleApprovalofServiceFacilitators(event) {
+    let currentValue = event.target.value;
+    this.valApprovalofServiceFacilitators = currentValue;
+    }
+
+  handleOtherAuditFrequency(event) {
+        let currentValue = event.target.value;
+    this.valOtherAuditFrequency = currentValue;
+    }
+  handleSupplierContractReference(event) {
+        let currentValue = event.target.value;
+    this.valSupplierContractReference = currentValue;
+    }
+  handleAuditFrequency(event) {
+        let currentValue = event.target.value;
+    this.valAuditFrequency = currentValue;
+    }
+
+  hanldleContractualPriceIncreaseDetails(event) {
+        let currentValue = event.target.value;
+    this.valContractualPriceIncreaseDetails = currentValue;
+    }
+  handleDetailsofServiceLevelTerms(event) {
+        let currentValue = event.target.value;
+    this.valDetailsofServiceLevelTerms = currentValue;
+    }
+  handleDetailsofAdditionalWarranties(event) {
+        let currentValue = event.target.value;
+    this.valDetailsofAdditionalWarranties = currentValue;
+    }
+
+  handleRetentionOtherVal(event) {
+        let currentValue = event.target.value;
+    this.valRecordRetentionPeriod = currentValue;
+    if (currentValue == "Other") {
+            this.disableRecordRetentionPeriod = false;
+    } else {
+            this.disableRecordRetentionPeriod = true;
+        }
+    }
+
+  handleNoticePeriod(event) {
+        let currentValue = event.target.value;
+    this.valNoticePeriod = currentValue;
+    if (currentValue == "Other") {
+            this.disableNoticePeriod = false;
+    } else {
+            this.disableNoticePeriod = true;
+        }
+    }
+
+  handleRetentionPeriodPostTermination(event) {
+        let currentValue = event.target.value;
+    this.valRecordRetentionPeriodPostTermination = currentValue;
+    if (currentValue == "Other") {
+            this.disableRecordRetentionPeriodPostTermination = false;
+    } else {
+            this.disableRecordRetentionPeriodPostTermination = true;
+        }
+    }
+  handleNoticeminordatacontentchanges(event) {
+        let currentValue = event.target.value;
+    this.valNoticeminordatacontentchanges = currentValue;
+    if (currentValue == "Other") {
+            this.disableNoticeminordatacontentchanges = false;
+    } else {
+            this.disableNoticeminordatacontentchanges = true;
+        }
+    }
+
+  handleNoticePeriodMinorTechnicalChanges(event) {
+        let currentValue = event.target.value;
+    this.valNoticeminortechnicalchanges = currentValue;
+    if (currentValue == "Other") {
+            this.disableNoticePeriodMinorTechnicalChanges = false;
+    } else {
+            this.disableNoticePeriodMinorTechnicalChanges = true;
+        }
+    }
+  hanldeNoticemajortechnicalchanges(event) {
+        let currentValue = event.target.value;
+    this.valNoticemajortechnicalchanges = currentValue;
+    if (currentValue == "Other") {
+            this.disableNoticePeriodMajorTechnicalChanges = false;
+    } else {
+            this.disableNoticePeriodMajorTechnicalChanges = true;
+        }
+    }
+
+  handleNoticemajordatacontentchanges(event) {
+        let currentValue = event.target.value;
+    this.valNoticemajordatacontentchanges = currentValue;
+    if (currentValue == "Other") {
+            this.disableNoticePeriodMajorDataChanges = false;
+    } else {
+            this.disableNoticePeriodMajorDataChanges = true;
+        }
+    }
+  handleChangecontrolterminationrightsdetail(event) {
+    let currentValue = event.target.value;
+    this.valChangecontrolterminationrightsdetail = currentValue;
+  }
+  handlevalCustomTerminationProcessIfOther(event) {
+    let currentValue = event.target.value;
+    this.valCustomTerminationProcessIfOther = currentValue;
+  }
+
+  handleNoticeOtherRoyaltyFeeChanges(event) {
+    let currentValue = event.target.value;
+    this.valNoticeOtherRoyaltyFeeChanges = currentValue;
+  }
+
+  handleFrequencyOtherofFeeChanges(event) {
+    let currentValue = event.target.value;
+    this.valFrequencyOtherofFeeChanges = currentValue;
+  }
+
+  handleNoticeOtherMinorTechnicalChanges(event) {
+    let currentValue = event.target.value;
+    this.valNoticeOtherMinorTechnicalChanges = currentValue;
+  }
+  handleNoticeOtherMajorTechnicalChanges(event) {
+    let currentValue = event.target.value;
+    this.valNoticeOtherMajorTechnicalChanges = currentValue;
+  }
+
+  handleNoticeOtherMajorDataChanges(event) {
+    let currentValue = event.target.value;
+    this.valNoticeOtherMajorDataChanges = currentValue;
+  }
+  handleNoticeOtherMinorDataChanges(event) {
+    let currentValue = event.target.value;
+    this.valNoticeOtherMinorDataChanges = currentValue;
+  }
+  handleBriefSummary(event) {
+    let currentValue = event.target.value;
+    this.valBriefSummary = currentValue;
+  }
+  handleNoticeOtherAudit(event) {
+    let currentValue = event.target.value;
+    this.valNoticeOtherAudit = currentValue;
+  }
+  handleInitialTermLengthOther(event) {
+    let currentValue = event.target.value;
+    this.valInitialTermLengthOther = currentValue;
+  }
+  handleRenewalTermLengthOther(event) {
+    let currentValue = event.target.value;
+    this.valRenewalTermLengthOther = currentValue;
+  }
+
+  handleSupplierLiabilityCapVariable(event) {
+    let currentValue = event.target.value;
+    this.valSupplierLiabilityCapVariable = currentValue;
+  }
+
+  handleSupplierssupplychainethicalcode(event) {
+    let currentValue = event.target.value;
+    this.valSupplierssupplychainethicalcode = currentValue;
+  }
+  handleIncludeliabilitycapvendorcurrency(event) {
+    let currentValue = event.target.value;
+    this.valIncludeliabilitycapvendorcurrency = currentValue;
+  }
+  handleVendorLiabilityCapVariable(event) {
+    let currentValue = event.target.value;
+    this.valVendorLiabilityCapVariable = currentValue;
+  }
+  handleIncludeliabilitycapforvendor(event) {
+    let currentValue = event.target.value;
+    this.valIncludeliabilitycapforvendor = currentValue;
+  }
+  handleExceptionstowebsiteuse(event) {
+    let currentValue = event.target.value;
+    this.valExceptionstowebsiteuse = currentValue;
+  }
+  handleAffiliatesDefinition(event) {
+    let currentValue = event.target.value;
+    this.valAffiliatesDefinition = currentValue;
+  }
+
+  handleGroupDefinition(event) {
+    let currentValue = event.target.value;
+    this.valGroupDefinition = currentValue;
+  }
+  handleExplanationofwhynot(event) {
+    let currentValue = event.target.value;
+    this.valExplanationofwhynot = currentValue;
+  }
+
+  handleVendorActivityDescription(event) {
+    let currentValue = event.target.value;
+    this.valVendorActivityDescription = currentValue;
+  }
+  handleDueDiligenceChecks(event) {
+    let currentValue = event.target.value;
+    this.valDueDiligenceChecks = currentValue;
+  }
+
+  handleDataQualityVerification(event) {
+    let currentValue = event.target.value;
+    this.valDataQualityVerification = currentValue;
+  }
+  handleDetailsregulationcval(event) {
+    let currentValue = event.target.value;
+    this.valDetailsregulationcval = currentValue;
+  }
+  handleSubscriberAgreementDefinition(event) {
+    let currentValue = event.target.value;
+    this.valSubscriberAgreementDefinition = currentValue;
+  }
+
+  handleAdditionaltermsbeyondVendorsstandard(event) {
+    let currentValue = event.target.value;
+    this.valAdditionaltermsbeyondVendorsstandard = currentValue;
+  }
+  handleExcludedEntities(event) {
+    let currentValue = event.target.value;
+    this.valExcludedEntities = currentValue;
+  }
+  handlePermittedEntities(event) {
+    let currentValue = event.target.value;
+    this.valPermittedEntities = currentValue;
+  }
+  handleDetailsofOtherScopeofGroupCoverage(event) {
+    let currentValue = event.target.value;
+    this.valDetailsofOtherScopeofGroupCoverage = currentValue;
+  }
+  handleServiceFacilitatorDefinition(event) {
+    let currentValue = event.target.value;
+    this.valServiceFacilitatorDefinition = currentValue;
+  }
+  handleAuditGuidelines(event) {
+    let currentValue = event.target.value;
+    this.valAuditGuidelines = currentValue;
+  }
+  handleDetailsofSupplierDataQualityWarrant(event) {
+    let currentValue = event.target.value;
+    this.valDetailsofSupplierDataQualityWarrant = currentValue;
+  }
+  handleDetailsoflevelplayingfieldpolicy(event) {
+    let currentValue = event.target.value;
+    this.valDetailsoflevelplayingfieldpolicy = currentValue;
+  }
+
+  handleDirectlossiscappedforRefinitiv(event) {
+    let currentValue = event.target.value;
+    this.valDirectlossiscappedforRefinitiv = currentValue;
+    if(currentValue == 'No'){
+      this.disableDirectlossexcludedforRefinitiv = false;
+    }else{
+      this.disableDirectlossexcludedforRefinitiv = true;
+
+    }
+  }
+handleDirectlossisexcludedforRefinitiv(event) {
+    let currentValue = event.target.value;
+    this.valDirectlossisexcludedforRefinitiv = currentValue;
+   
+  }
+  handleRenewalStartDate(event) {
+    let currentValue = event.target.value;
+    this.valRenewalStartDate = currentValue;
+   
+  }
+
+  handleTerminationInitiatedby(event) {
+    let currentValue = event.target.value;
+    this.valTerminationInitiatedby = currentValue;
+    if(currentValue == 'Mutual Agreement' || currentValue == 'Vendor Initiated' || currentValue == 'Supplier Initiated'){
+      this.disableTerminationInitiated = false;
+    }else{
+      this.disableTerminationInitiated = true;
+
+    }
+  }
+  handleTerminationEffectiveDate(event) {
+      let currentValue = event.target.value;
+      this.valTerminationEffectiveDate = currentValue;
+    }
+  handleReasonsforTermination(event) {
+      let currentValue = event.target.value;
+      this.valReasonsforTermination = currentValue;
+    }
+    handleReasonForCancellation(event) {
+      let currentValue = event.target.value;
+      this.valReasonForCancellation = currentValue;
+    }
+    handleRenewalEndDate(event){
+      let currentValue = event.target.value;
+      this.valRenewalEndDate = currentValue;
+    }
+    hanldeSituationswhereAuditCoveragediffers(event){
+      let currentValue = event.target.value;
+      this.valSituationswhereAuditCoveragediffers = currentValue;
+    }
+    handleBasisforInterestcalculation(event){
+      let currentValue = event.target.value;
+      this.valBasisforInterestcalculation = currentValue;
+    }
+  // Handle check error
+  handleError(event) {
+    let message = event.detail.detail;
+    message = "Please fill out all the required fields";
+    this.isLoaded = false;
+  }
+
 }
