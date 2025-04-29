@@ -545,3 +545,34 @@ public class RSCM_RequiredFieldForContract {
         return finalResult;   
     }   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+trigger SupplierContractTrigger on Supplier_Contract__c (before insert, before update) {
+    // Only run the validation logic for specific contexts
+    if (Trigger.isBefore && (Trigger.isInsert || Trigger.isUpdate)) {
+        List<RSCM_RequiredFieldForContract.ContractValidationResult> results =
+            RSCM_RequiredFieldForContract.validateSupplierContracts(Trigger.new);
+
+        Map<Id, Supplier_Contract__c> recordMap = new Map<Id, Supplier_Contract__c>();
+        for (Supplier_Contract__c sc : Trigger.new) {
+            recordMap.put(sc.Id, sc);
+        }
+
+        for (RSCM_RequiredFieldForContract.ContractValidationResult result : results) {
+            Supplier_Contract__c record = recordMap.get(result.supplierContractId);
+            if (record != null) {
+                record.addError('Missing required fields: ' + String.join(result.missingFields, ', '));
+            }
+        }
+    }
+}
